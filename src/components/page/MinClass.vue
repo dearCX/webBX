@@ -14,9 +14,9 @@ export default {
     data () {
         return {
 			classList:[
-				{title:'创建微课程',path:'/MySpace/MinClasses/',id:'createClass'},
-				{title:'已购微课程',path:'/MySpace/MinClasses/BuiedClass',id:'buiedClass'}
-			]			
+				{title:'创建课程',path:'/MySpace/MinClasses/',id:'createClass'},
+				{title:'已购课程',path:'/MySpace/MinClasses/BuiedClass',id:'buiedClass'}
+			]		
         }
 	}	
 }

@@ -29,7 +29,7 @@ export default new Router({
           component:resolve => require(['../components/page/FilterResource.vue'], resolve),     
           children:[
             {
-              path: '/',
+              path: 'AreaResource',
               component: resolve => require(['../components/module/AreaResource.vue'], resolve)
             },
             {
@@ -221,9 +221,40 @@ export default new Router({
         {
           path: 'LoadResource/:resourceKindId',
           component: LoadResource
-        }         
+        },
+        {
+          path: 'PersonalCenter',
+          component: resolve => require(['../components/page/PersonalCenter.vue'], resolve),
+          children:[
+            {
+              path: '/',          
+              component: resolve => require(['../components/module/PersonInfo.vue'], resolve),
+            },
+            {
+              path: 'ChangePassword',          
+              component: resolve => require(['../components/module/ChangePassword.vue'], resolve)
+            },
+            {
+              path: 'Teacher',          
+              component: resolve => require(['../components/module/Teacher.vue'], resolve)
+            },
+            {
+              path: 'Authority',          
+              component: resolve => require(['../components/module/Authority.vue'], resolve)
+            },
+            {
+              path: 'TeacherMessage',          
+              component: resolve => require(['../components/module/TeacherMessage.vue'], resolve)
+            }
+          ]
+        }      
       ]     
     },
+    {
+      path: '/ShowSpace', 
+      name: 'ShowSpace',   
+      component: resolve => require(['../components/page/ShowSpace.vue'], resolve) 
+    }
   ]
 })
 

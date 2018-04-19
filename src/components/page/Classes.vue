@@ -18,10 +18,10 @@
                 </li>
               </ul>              
             </div>
-            <div id="search">
+            <!-- <div id="search">
               <input placeholder="请输入课程名称"/> 
               <div>查询</div>
-            </div>
+            </div> -->
           </div>          
         </div>       
         <div id="new-classes" class="w-1200">          
@@ -69,7 +69,7 @@ export default {
             this.$router.push('/ClassSub?pId='+pId+'&gId='+gId);
         },
         getNewClassesList(){
-          this.$http.post('/web/course/listCourse',this.$qs.stringify({
+          this.$http.post('/web/course/listCourse.do',this.$qs.stringify({
             timeOrder:2,
             pageSize:8
           }))
@@ -82,7 +82,7 @@ export default {
           })
         },
         getRecomClassesList(){
-          this.$http.post('/web/course/listCourse',this.$qs.stringify({
+          this.$http.post('/web/course/listCourse.do',this.$qs.stringify({
             needRecommend:1,
             pageSize:8
           }))
@@ -95,7 +95,7 @@ export default {
           })
         },
         getHotClassesList(){
-          this.$http.post('/web/course/listCourse',this.$qs.stringify({
+          this.$http.post('/web/course/listCourse.do',this.$qs.stringify({
             needHotest:1,
             pageSize:8
           }))

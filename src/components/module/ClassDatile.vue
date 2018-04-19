@@ -6,8 +6,8 @@
   				<video 
   				:src="videoUrl" 
   				autoplay="autoplay" 
-  				controls="controls" 
-  				poster="../../assets/imgs/classes/coursedebg.png"></video>
+  				poster="../../assets/imgs/classes/coursedebg.png" 
+          id="video"></video>
   			</div>
   			<div class="videoList right">
 	            <ul class="treeList">
@@ -54,16 +54,15 @@
   					<span>共{{courseInfo.videoNums}}讲</span>
   				</p>
   			</div>
-  			<div class="infoRight right">
+  			<div class="infoRight right" v-show="courseInfo.isMyCourse==0">
           <span class="price" v-show="courseInfo.isFree==0">
             <span>￥</span>
             <span style="font-size: 36px;color: #ff6464;">{{(courseInfo.money)/100}}</span>
-            <span>元</span>
           </span>
   				<span v-show="courseInfo.isFree==1">
 	  				<span style="font-size: 16px;">免费</span>
   				</span>
-  				<a href="#" class="payBtn" @click="goConfirmPayment">加入学习</a>
+  				<span class="payBtn" @click="goConfirmPayment">加入学习</span>
   			</div>
   			<div class="clear"></div>
   		</div>	
@@ -92,30 +91,63 @@
   export default {
 	data () {
         return {
+            token:this.$storage.getStorage("token"),
             theme2: 'light',
             courseId: '',
-            videoUrl: 'http://192.168.0.252:86/resource/demo/859.mp4',
+            videoUrl: '',
             teacherInfo: {},
             courseInfo: {},
             courseTree: [],
         }
     },
     methods:{
+      login(){
+        this.$router.replace({
+           name:"Login",
+           query: {redirect: this.$router.currentRoute.fullPath}
+          })
+      },
       goConfirmPayment(){
+        if(!this.token){
+          this.login();
+          return;
+        }
         if(this.courseInfo.isFree==0){
           this.$router.push('/ConfirmPayment');
           this.$storage.setSession("courseInfo",this.courseInfo);
+        }else if(this.courseInfo.isFree==1){
+          this.addMycourse(this.courseInfo.id);
         }
       },
       playVideo(item){
         if(item.hasVideo==1){
           this.getCourseVideo(item.courseId,item.id);
+          document.getElementById("video").setAttribute("controls", "controls");
         }else{
           this.$Message.info('此目录无视频资源！');
         }
       },
+      addMycourse(courseId){
+      this.$http.post('/web/course/a/add2MyCourse.do',this.$qs.stringify({
+            token:this.token,
+            courseId:courseId
+          }))
+          .then((res)=>{
+            // console.log(res.data); 
+            if(res.data.status==0){
+              this.$Message.info(res.data.message);
+              this.courseInfo.isMyCourse=1;
+            }else{
+              alert(res.data.message);
+            }
+          })
+          .catch((err)=>{
+            alert(err);
+          })
+      },
       getTeacherInfo(userId){
-      this.$http.post('/web/user/getTeacherDetail',this.$qs.stringify({
+      this.$http.post('/web/user/getTeacherDetail.do',this.$qs.stringify({
+            token:this.token,
             userId:userId
           }))
           .then((res)=>{
@@ -127,7 +159,8 @@
           })
       },
     	getCourseInfo(courseId){
-			this.$http.post('/web/course/getCourse',this.$qs.stringify({
+			this.$http.post('/web/course/getCourse.do',this.$qs.stringify({
+            token:this.token,
             courseId:courseId
           }))
           .then((res)=>{
@@ -140,7 +173,8 @@
           })
     	},
     	getCourseTree(courseId){
-			this.$http.post('/web/course/getCourseCatalogTree',this.$qs.stringify({
+			this.$http.post('/web/course/getCourseCatalogTree.do',this.$qs.stringify({
+            token:this.token,
             courseId:courseId
           }))
           .then((res)=>{
@@ -152,7 +186,12 @@
           })
     	},
       getCourseVideo(courseId,catalogId){
-        this.$http.post('/web/course/a/getCourseVideo',this.$qs.stringify({
+        if(!this.token){
+          this.login();
+          return;
+        }
+        this.$http.post('/web/course/a/getCourseVideo.do',this.$qs.stringify({
+            token:this.token,
             courseId:courseId,
             catalogId:catalogId,
           }))
@@ -261,6 +300,7 @@
 	margin-left: 20px;
 	text-align: center;
 	color:#fff;
+  cursor: pointer;
 	background-color: #1caaf1;
 	border-radius: 5px;
 }

@@ -22,7 +22,7 @@
             </div>
             <SpaceList></SpaceList> 
         </div>
-        <SpaceDynamic></SpaceDynamic> 
+        <SpaceDynamic :infos="latestNews"></SpaceDynamic> 
         <div>
             <div class="section-box">
                 <span class="section-title">优秀学生空间</span>
@@ -45,7 +45,7 @@ export default {
     },
     data () {
         return {
-
+            latestNews:[]
         }
     },
     methods:{

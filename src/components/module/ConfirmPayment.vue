@@ -24,7 +24,7 @@
 			</ul>
 			<span class="section-title">课程特色</span>
 			<div class="classList">
-				<a href="#">
+				<a href="javascript:void(0);">
 					<img :src="Class.imgUrl">
         			<p>{{ Class.name }}</p>
 				</a>
@@ -34,7 +34,6 @@
 				<span class="price">
 	  				<span>￥</span>
 	  				<span style="font-size: 36px;color: #ff6464;">{{(Class.money)/100}}</span>
-	  				<span>元</span>
   				</span>
 			</div>
 		</div>
@@ -51,7 +50,10 @@
         }
     },
     created(){
-    	this.Class=this.$storage.getSession("courseInfo")
+    	this.Class=this.$storage.getSession("courseInfo");
+    	if(this.Class.imgUrl==''){
+    		this.Class.imgUrl=require('../../assets/imgs/classes/coursedebgimg.jpg');
+    	}
     }
   }
 </script>

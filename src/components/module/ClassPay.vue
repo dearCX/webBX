@@ -27,7 +27,6 @@
   				<span class="ml20">应付金额：</span>
   				<span>￥</span>
   				<span style="font-size: 36px;color: #ff6464;">{{(courseInfo.money)/100}}</span>
-  				<span>元</span>
 			</p>
 			<span class="section-title">支付方式</span>
 			<div class="buyBox">

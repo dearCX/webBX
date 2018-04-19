@@ -5,7 +5,7 @@
 			</p>
       <div id="content-box">
         <div class="filters">
-          <div>筛选条件</div>
+          <SelectTree></SelectTree>
         </div>
         <div class="contents">
           <div class="right-title">
@@ -42,8 +42,12 @@
   </div>
 </template>
 <script>
+import SelectTree from '@/components/common/SelectTree.vue';
 export default {
   name:'AreaResource',
+  components:{
+    SelectTree
+    },
   data(){
       return{
           titles:[

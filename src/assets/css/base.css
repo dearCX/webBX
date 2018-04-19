@@ -238,6 +238,9 @@ a:hover,a:active {
     height: 120px;
     border-bottom: 1px solid #F5F5F5;
 }
+#right-resource .resourceCont li:last-child{
+    border-bottom: none;
+}
 #right-resource .resourceCont li>div>p{
     float: left;  
     margin-top: 20px;

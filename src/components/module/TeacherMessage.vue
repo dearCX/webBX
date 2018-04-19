@@ -1,69 +1,53 @@
 <template>
-	<div class="mainContainer">
-		
-		
-		<div class="right">
-			<p class="title">
-				<a href="#">任教信息</a> 
-			</p>
-			
-			<ul class="teacherMessage">
-				<li>
-					<p>深圳市育才一中   2016级  初二10班</p>
-					<p>
-						深圳市育才一中   2016级  初二10班
-						
-						<a href="#" class="update">编辑</a>
-						<a href="#" class="upLevel">升级</a>
-					</p>
-				</li>
-				<li>
-					<p>深圳市育才一中   2016级  初二10班</p>
-					<p>
-						深圳市育才一中   2016级  初二10班
-						
-						<a href="#" class="update">编辑</a>
-						<a href="#" class="upLevel">升级</a>
-					</p>
-				</li>
-				<li>
-					<p>深圳市育才一中   2016级  初二10班</p>
-					<p>
-						深圳市育才一中   2016级  初二10班
-						
-						<a href="#" class="update">编辑</a>
-						<a href="#" class="upLevel">升级</a>
-					</p>
-				</li>
-			</ul>
-			
-			
-		</div>
-		
+	<div class="right-container">
+		<p class="title">
+			<a href="javascript:void(0);">任教信息</a> 
+		</p>
+		<ul class="teacherMessage">
+			<li v-for="item of teachList">
+				<p>{{item.class}}</p>
+				<p>{{item.book}}</p>
+				<div>
+					<a href="javascript:void(0);" class="update">编辑</a>
+					<a href="javascript:void(0);" class="upLevel">升级</a>
+					<a href="javascript:void(0);" class="upLevel">转让班主任</a>
+					<a href="javascript:void(0);" class="upLevel">解散</a>
+					<a href="javascript:void(0);" class="upLevel">退出</a>
+				</div>
+			</li>
+		</ul>
 	</div>
 </template>
+<script>
+export default {
+	name:'TeacherMessage',
+	data(){
+		return{
+			teachList:[
+				{id:1,class:'深圳市育才一中   2016级  初二10班',book:'语文（人教版'},
+				{id:2,class:'深圳市育才一中   2016级  初二10班',book:'语文（人教版'},
+				{id:3,class:'深圳市育才一中   2016级  初二10班',book:'语文（人教版'},
+				{id:4,class:'深圳市育才一中   2016级  初二10班',book:'语文（人教版'}
+			]
+		}
+	}
+}
+</script>
+
 <style scoped>
-	.mainContainer{
-		width: 1200px;
-		margin: auto;
-		margin-top: 40px;
+	.right-container{
+        float: left;
+		width: 940px;
+        min-height: 560px;
+		margin-left: 20px;
+        padding: 40px 60px 40px 60px;
+        border: 1px solid #e9e9e9;
+        background-color: #fff;
 	}
-	
-	
-	.right{
-		width: 815px;
-		padding: 40px 60px 40px 60px;
-		height: 559px;
-		border: 1px solid #e9e9e9;
-		margin-left: 21px;
-		float: left;
-	}
-	.right .title{
-		font-size: 20px;
-		color: #666666;
+	.right-container .title{
 		border-bottom: 1px solid #e9e9e9; 
 	}
-	.right .title a{
+	.right-container .title a{
 		display: inline-block;
 		text-decoration: none;
 		font-size: 20px;
@@ -75,13 +59,16 @@
 		margin-top: 40px;
 	}
 	.teacherMessage li{
-		padding: 21px 20px;
-		width: 780px;
-		height: 40px;
+		position: relative;
+		height: 80px;
+		padding: 20px 40px 20px 20px;
+		color: #666;
 		font-size: 14px;
-		color: #666666;
 		border: 1px solid #e9e9e9;
 		margin-top: 20px;
+	}
+	.teacherMessage li p{
+		line-height: 24px;
 	}
 	.teacherMessage a{
 		color: #1EABF3;
@@ -89,6 +76,11 @@
 		padding-right: 10px;
 		float: right;
 		text-decoration: none;
+	}
+	.teacherMessage div{
+		position: absolute;
+		right: 20px;
+		bottom: 20px;
 	}
 </style>
 	

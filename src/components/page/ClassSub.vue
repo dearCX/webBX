@@ -3,9 +3,9 @@
   	<div class="fliterClass w-1200">
   		<p>
         <Icon type="ios-list-outline" color="#999"></Icon>
-  			<span class="font9">学段</span>
-  			<span :class="{active:selPeriod==0}" 
-        @click="changePeriod(0)">全部</span>
+  			<span class="font9">分类</span>
+  			<!-- <span :class="{active:selPeriod==0}" 
+        @click="changePeriod(0)">全部</span> -->
   			<span 
         v-for="item in per2gradeList" 
         :key="item.id"
@@ -16,7 +16,8 @@
         <Icon type="ios-paper-outline" color="#999"></Icon>
         <span class="font9">年级/专题</span>
         <span :class="{active:selGrade==0}" 
-        @click="changeGrade(0)">全部</span>
+        @click="changeGrade(0)" 
+        v-show="selPeriod!=0">全部</span>
         <span
         v-for="item in gradeList" 
          :key="item.id"
@@ -30,25 +31,33 @@
         @click="changeSubject(0)">全部</span>
         <span 
         v-for="item in subjectList" 
-        :key="item.id"
+        :key="item.subjectId"
         @click="changeSubject(item)"
-        :class="{active:item.id==selSubject}">{{item.name}}</span>
+        :class="{active:item.subjectId==selSubject}">{{item.subjectName}}</span>
   		</p>
   	</div>
-  	<div class="classList w-1200">
-  		<a href="#" v-for="(item,index) in ClassList" :key="index" @click="goToInfo(item.id)">
+  	<!-- <div class="classList w-1200">
+  		<a href="javascript:void(0);" v-for="(item,index) in ClassList" :key="index" @click="goToInfo(item.id)">
         <img :src="item.imgUrl">
         <p>{{ item.name }}</p>
       </a>
-  	</div>
+      
+  	</div> -->
+    <div class="classLists w-1200">
+      <ClassList :classList="ClassList"></ClassList> 
+    </div>
   </div>
 </template>
 
 
 <script>
 import global_ from '@/components/Global'; 
+import ClassList from '@/components/common/ClassList'; 
   export default {
 	  name:'ClassSub',
+    components:{
+        ClassList
+    },
     data () {
         return {
             per2gradeList:global_.per2gradeList,
@@ -65,27 +74,27 @@ import global_ from '@/components/Global';
             this.$router.push('/ClassDatile?courseId='+id);
         },
       changePeriod(item){
-        this.selGrade=0; 
-        if(item==0){
-          this.selPeriod=0; 
-          this.gradeList=this.per2gradeList[2].gradeList.concat(this.per2gradeList[1].gradeList,this.per2gradeList[0].gradeList);
-          this.getClassesList(this.selPeriod);
-          return;
+        if(item.id==0){
+          this.selGrade=13;
+        }else{
+          this.selGrade=0; 
         }
         this.selPeriod=item.id; 
         this.gradeList=item.gradeList;
         this.getClassesList(this.selPeriod);
+        this.getSubjectList(this.selPeriod,this.selGrade);
+        
       },  
       changeGrade(item){
         this.selSubject=0; 
         if(item==0){
           this.selGrade=0; 
-          this.getSubjectList(0);
+          this.getSubjectList(this.selPeriod,0);
           this.getClassesList(this.selPeriod,this.selGrade);
           return;
         }
         this.selGrade=item.id; 
-        this.getSubjectList(item.id);
+        this.getSubjectList(this.selPeriod,item.id);
         this.getClassesList(this.selPeriod,this.selGrade);
       },
       changeSubject(item){
@@ -94,11 +103,12 @@ import global_ from '@/components/Global';
           this.getClassesList(this.selPeriod,this.selGrade,this.selSubject); 
           return;
         }
-        this.selSubject=item.id; 
+        this.selSubject=item.subjectId; 
         this.getClassesList(this.selPeriod,this.selGrade,this.selSubject);
       },
-      getSubjectList(gId){
-        this.$http.post('/web/microcourse/listSubjcectByGradeId',this.$qs.stringify({
+      getSubjectList(pId,gId){
+        this.$http.post('/web/coursebook/listSubjectByGrade.do',this.$qs.stringify({
+            periodId:pId,
             gradeId:gId
           }))
          .then((res)=>{
@@ -112,7 +122,7 @@ import global_ from '@/components/Global';
         let periodId=pId||0;
         let gradeId=gId||0;
         let subjectId=sId||0;
-          this.$http.post('/web/course/listCourse',this.$qs.stringify({
+          this.$http.post('/web/course/listCourse.do',this.$qs.stringify({
             periodId:periodId,
             gradeId:gradeId,
             subjectId:subjectId
@@ -129,8 +139,12 @@ import global_ from '@/components/Global';
     created:function(){
       this.selPeriod=this.$route.query.pId;
       this.selGrade=this.$route.query.gId;
-      this.gradeList=this.per2gradeList[(this.selPeriod - 1)].gradeList;
-      this.getSubjectList(this.$route.query.gId);
+      if(this.selPeriod==0){
+        this.gradeList=this.per2gradeList[3].gradeList;
+      }else{
+        this.gradeList=this.per2gradeList[(this.selPeriod - 1)].gradeList;
+      }
+      this.getSubjectList(this.selPeriod,this.selGrade);
       this.getClassesList(this.selPeriod,this.selGrade);
     }
   }
@@ -166,6 +180,13 @@ import global_ from '@/components/Global';
 /**
 *列表项
 */
+.classLists{
+  padding-top: 40px;
+  margin-bottom: 80px;
+  /*border: 1px solid #e9e9e9;*/
+  /*background-color: #fff;*/
+  overflow: hidden;
+}
 .classList{
   padding-top: 40px;
   padding-left: 30px;

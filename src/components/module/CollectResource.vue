@@ -3,7 +3,7 @@
 		<div class="right-title">
 			<p>
 				<a href="javascript:void(0);" v-for="(title,index) in titles" @click="changeTitle(title)" :class="{active:title.id == selTitle}">{{title.name}}</a>
-				<a href="javascript:void(0);">特色微课</a>
+				<a href="javascript:void(0);" @click="selMinClass" :class="{active:isActive==true}">特色微课</a>
 			</p>
 			<div>		
 				<div id="select-box">
@@ -14,7 +14,7 @@
 					</div>
 					<div v-if="open" id="content">
 						<ul>
-							<li v-for="(item,index) in classList" @click="getsubject(item.id,item.name)" :class="{active:item.id==periodId}">
+							<li v-for="(item,index) in classList" @click="getsubject(item)" :class="{active:item.id==periodId}">
 								{{item.name}}								
 							</li>
 						</ul>
@@ -42,10 +42,10 @@
 		<div class="operator">	
 			<button v-if="resourceList.length>1" @click="showBatch" :class="{active:ifBatch==true}">批量设置</button>
 		</div>		
-		<div class="batch-modify" v-if="ifBatch">
+		<div class="batch-modify" v-show="ifBatch">
 			<label for="all-check">全选</label> 
 			<input type="checkbox" id="all-check" @click="selectAll"/>	
-			<span @click="pushAll">推送</span>
+			<span v-if="isActive == false" @click="pushAll">推送</span>
 			<span @click="deleteAll">删除</span>
 		</div>
 		<ul class="resourceCont" v-if="resourceList.length>0">
@@ -54,16 +54,21 @@
 					<p>
 						<input type="checkbox" :value="item.resourceLocalId" v-model="selectArr" v-if="ifBatch" @click="selectOne"/>
 					</p>
-					<img :src="item.fileSuffix | fillType"/>				
+					<img v-if="isActive == false" :src="item.fileSuffix | fillType"/>	
+					<img v-if="isActive == true" src="/static/imgs/resource/fileVideo.png"/>				
 					<div class="doc-content">
-						<p class="doc-title">
+						<p v-if="isActive == false" class="doc-title">
 							<span>{{item.recourceLocalName}}</span> 
 							<button v-if="item.resourceType == 1">课件</button>
 							<button v-if="item.resourceType == 2">试卷</button>
 							<button v-if="item.resourceType == 3">教案</button>
 							<button v-if="item.resourceType == 4">学案</button>
 						</p>
-						<div class="sub-title">
+						<p v-if="isActive == true" class="doc-title">
+							<span>{{item.videoName}}</span> 
+							<button>特色微课</button>
+						</p>
+						<div v-if="isActive == false" class="sub-title">
 							<span>{{item.periodName}}</span>
 							<span>{{item.subjectName}}</span>
 							<span>{{item.versionName}}</span>
@@ -73,13 +78,20 @@
 							<span>{{item.bname3 = item.bname3 == "无"?'':item.bname3}}</span>
 							<span class="upTime">收藏时间：{{item.createTime | formatTime}}</span>
 						</div>
+						<div v-if="isActive == true" class="sub-title">
+							<span>{{item.periodName}}</span>
+							<span>{{item.subjectName}}</span>
+							<span>{{item.gradeName}}</span>
+							<span>专题名称：{{item.topic}}</span>
+							<span class="upTime">收藏时间：{{item.createTime | formatTime}}</span>
+						</div>
 						<div class="edit">
 							<p class="edit-title">
 								<span>编辑</span> 
 								<Icon type="arrow-down-b" color="#1caaf1"></Icon>
 							</p>
 							<div class="edit-content">
-								<span @click="pushResource(item)">推送</span>
+								<span v-if="isActive == false" @click="pushResource(item)">推送</span>
 								<span @click="deleteResource(item.resourceLocalId)">删除</span>
 							</div>			
 						</div>								
@@ -87,7 +99,25 @@
 				</div>									
 			</li>
 		</ul>
-		<Page :total="totalCount" show-elevator show-total v-if="resourceList.length>0" @on-change="changePage"></Page>	
+		<Modal
+			v-model="model.pushModel"
+			title="推送"
+			@on-ok="confirmPushResource"
+			@on-cancel="cancelPush"
+			>
+			<div id="push-box">
+				<p>选择班级</p>
+				<div v-if="gradeList.length>0">
+					<ul class="grade-title">
+						<li v-for="item of gradeList" @click="changeGrade(item)" :class="{active:item.key == currentGrade}">{{item.name}}</li>
+					</ul>					
+					<ul class="grade-content" v-if="currentGradeList.length>0">
+						<li v-for="item of currentGradeList" @click="changeClass(item)" :class="{active:item.classId == currentClassId}">{{item.className}}</li>
+					</ul>
+				</div>
+			</div>			
+		</Modal>
+		<Page :total="totalCount" :current="params.pageIndex" show-elevator show-total v-if="resourceList.length>0" @on-change="changePage"></Page>	
 	</div>
 	
 </template>
@@ -99,23 +129,22 @@ export default {
 	  	return {
 			selectArr: [],
 			model:{							
-				pushModel:false,
-				setModel:false,
-				moveModel:false
+				pushModel:false
 			},
 			titles:[
 				{id:1,name:'同步资源'},
 				{id:2,name:'知识点'}
 			],
-			selTitle:1,					  	
+			selTitle:1,	
+			isActive:false,				  	
 			ifBatch:false, 			
-			resourceList:[],			
+			resourceList:[],
 			totalCount:'',
 			name:'',
 			params:{				
 				pageIndex:1,
 				pageSize:10,
-				token:"354374bbf8b6e0ef44b26e13eb1900cb674df11abdc98cf4f79a64a78952d3886943ba77c3f87fb94d45cf2aa30b11610662c6fa2a974a261019f03c72a9cb066fd16b92ae1c1cf28228c026138f73b739e5a7e794ac4b05ad52b7f62056135b1a127020233d4a4ec8c717953888324ad31911382e8f3060810ec7d6a50b775a0c499c805df9d0bb77651f5931a3a1433d6184f3555cc9d908bb4fb24aba4adc08311f5505777ccab3fbefbed52b46b4fa749c72b6f1cd2426bb759ed73b94f8d863cbf69239fa5864a65263c548507827629f1852ae0aea0b038f0691ff346098dd4d940ef1c265"
+				token:this.$storage.getStorage("token")
 			},
 			withDisabledNode:1,
 			open:false,
@@ -126,47 +155,34 @@ export default {
 			subjectId:0,
 			bookId:'',
 			textBookId:'',
+			gradeId:'',
 			period:'',
 			subject:'',
 			book:'',
 			texBook:'',
 			classList:[
-				{id:1,name:'高中'},
-				{id:2,name:'初中'},
-				{id:3,name:'小学'},
-			],			
+				{id:1,name:'高中',grade:1},
+				{id:2,name:'初中',grade:1},
+				{id:3,name:'小学',grade:2}
+			],	
+			minClassSubjectList:{
+				1:[{subjectId:1,subjectName:'语文'},{subjectId:2,subjectName:'数学'},{subjectId:3,subjectName:'英语'},{subjectId:4,subjectName:'物理'},{subjectId:5,subjectName:'化学'},{subjectId:6,subjectName:'地理'},{subjectId:7,subjectName:'历史'},{subjectId:8,subjectName:'政治'},{subjectId:9,subjectName:'生物'}],
+				2:[{subjectId:1,subjectName:'语文'},{subjectId:2,subjectName:'数学'},{subjectId:3,subjectName:'英语'}]
+			},
 			selData:'',
 			gradeList:[],
 			currentGrade:'',
 			currentGradeList:[],
 			currentClassId:'',
 			pushArr:[],
-			classifyList:[],
-			currentSet:'',
 			resourceId:'',
-			nodeTree:[],
-			loadId1:'',
-			loadId2:'',
-			loadId3:'',
-            foldId1:'',
-            foldId2:'',
-			bid1:'',
-            bid2:'',
-            bid3:'',
-            kid1:'',
-            kid2:'',
-            kid3:'',
-			moveTextbookId:'',
 			msg:{
 				unselectInfo:'您还没有选择资源，请先选择',
 				unselectClassify:'您还没有选择类别，请先选择',
 				reqError:'请求失败请重试',
 				resError:'请求资源失败，请重试',
-				moveInfo:'移动资源成功',
 				deleteInfo:'删除资源成功',
-				shareInfo:'分享资源成功',
-				pushInfo:'推送资源成功',
-				setInfo:'设置类别成功'
+				pushInfo:'推送资源成功'
 			}
 	  	}
 	},
@@ -213,10 +229,17 @@ export default {
 		}
 	},
 	methods:{
-		changeTitle(item){
+		changeTitle(item){			
+			this.isActive = false;
 			this.selTitle=item.id; 
 			this.params.pageIndex = 1;
 			this.getResourceList();
+		},
+		selMinClass(){
+			this.selData = '';
+			this.isActive = true;
+			this.selTitle = '';
+			this.getMinClassList();
 		},		
 		showBatch(){
 			if(!this.ifBatch){
@@ -256,7 +279,35 @@ export default {
 			}).catch(function (error) {
 				alert(error);
 			});
-		},	
+		},
+		getMinClassGrade(subjectId){
+			this.$http.post('/web/microcourse/listGrade.do',qs.stringify({				
+				periodId:this.periodId,
+				subjectId:subjectId,					
+				token:this.params.token
+			})).then(res => {	
+				if(res.status != 200){
+					this.$Message.error(this.msg.reqError);
+				}else{
+					let result = res.data;
+					if(result.status != 0){
+						this.$Message.error(this.msg.resError);
+					}else{	
+						if(result.data instanceof Array && result.data.length>0){
+							this.bookList = result.data;
+							if(result.data.length == 1){
+								this.open=false;
+							}
+						}else{
+							this.bookList = [];
+						}						
+					}
+				}			
+				
+			}).catch(function (error) {
+				alert(error);
+			});
+		},			
 		getBookList(subjectId){
 			this.$http.post('/web/coursebook/listBookVersion.do',qs.stringify({				
 				periodId:this.periodId,
@@ -281,7 +332,6 @@ export default {
 						}else{
 							this.bookList = [];
 						}
-						
 					}
 				}			
 				
@@ -348,30 +398,72 @@ export default {
 				alert(error);
 			});
 		},
-		searchResource(){			
-			this.getResourceList();
+		getMinClassList(){
+			this.$http.post('/web/microcourse/a/listMyCollectCourse.do',qs.stringify({	
+				name:this.name,
+				periodId:this.periodId,
+				subjectId:this.subjectId,
+				gradeId:this.bookId,
+				pageIndex:this.params.pageIndex,
+				pageSize:this.params.pageSize,
+				token:this.params.token
+			})).then(res => {	
+				if(res.status != 200){
+					this.$Message.error(this.msg.reqError);
+				}else{
+					let result = res.data;
+					if(result.status != 0){
+						this.$Message.error(this.msg.resError);
+					}else{						
+						if(result.data.list instanceof Array && result.data.list.length>0){
+							this.resourceList = result.data.list;
+							this.totalCount = result.data.totalCount;
+						}else{
+							this.resourceList = [];
+						}
+					}
+				}			
+				
+			}).catch(function (error) {
+				alert(error);
+			});
+		},
+		searchResource(){	
+			if(this.selTitle == ''){
+				this.getMinClassList();
+			}else{
+				this.getResourceList();
+			}	
 		},
 		changePage(page){
 			this.params.pageIndex = page;
-			this.getResourceList();
+			if(this.selTitle == ''){
+				this.getMinClassList();
+			}else{
+				this.getResourceList();
+			}	
 		},
-		getsubject(id,name){      
+		getsubject(item){ 
 			this.bookList = [];
 			this.textBookList = [];
 			this.subjectId = '';
-			this.period = name;
+			this.period = item.name;
 			this.selData = this.period;
-			// if(this.listsubject[id] == undefined){
-			// 	this.subjectList = [];
-			// }else{
-			// 	this.subjectList = this.listsubject[id];        
-			// }      
-			this.periodId = id;
+				
+			this.periodId = item.id;
 
-			this.getSubjectList(id);
 			this.params.pageIndex = 1;
-			this.getResourceList();
 
+			if(this.selTitle == ''){
+				
+				this.subjectList = this.minClassSubjectList[item.grade];
+				
+				this.getMinClassList();
+			}else{
+
+				this.getSubjectList(item.id);				
+				this.getResourceList();
+			}	
 		},
 		getbook(id,name){
 			
@@ -379,31 +471,33 @@ export default {
 			this.bookId = '';
 			this.subject = name;
 			this.selData = this.period+'/'+this.subject;
-			// if(this.listbook[id] == undefined){
-			// 	this.bookList = [];
-			// }else{
-			// 	this.bookList = this.listbook[id];
-			// }
+			
 			this.subjectId = id;
-			this.getBookList(id);
-
 			this.params.pageIndex = 1;
-			this.getResourceList();
+
+			if(this.selTitle == ''){
+				this.getMinClassGrade(id);	
+				this.getMinClassList();			
+			}else{
+				this.getBookList(id);
+				this.getResourceList();
+			}
 		},
 		gettexBook(id,name){
 		
 			this.book = name;
 			this.selData = this.period+'/'+this.subject+'/'+this.book;
-			// if(this.listtexBook[id] == undefined){
-			// 	this.textBookList = [];
-			// }else{
-			// 	this.textBookList = this.listtexBook[id];
-			// }
+			
 			this.bookId = id;
-			this.getTextBookList(id);
-
 			this.params.pageIndex = 1;
-			this.getResourceList();
+
+			if(this.selTitle == ''){					
+				this.getMinClassList();
+				this.open = false;			
+			}else{
+				this.getTextBookList(id);
+				this.getResourceList();
+			}
 		},
 		seltexBook(id,name){
 			this.textBookId = id;
@@ -433,14 +527,19 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
-			this.getResourceList();
+
+			if(this.selTitle == ''){					
+				this.getMinClassList();							
+			}else{
+				this.getResourceList();
+			}
 		},
 		deleteResource(resourceId){
 			this.$Modal.confirm({
                 title: '删除',
                 content: '<p>确定删除吗？</p>',
                 onOk: () => {
-					this.$http.post('/web/coursebook/a/deleteMyUploadResource.do',qs.stringify({				
+					this.$http.post('/web/coursebook/a/deleteCollectResource.do',qs.stringify({				
 						resourceLocalIds:resourceId,
 						token:this.params.token
 					})).then(res => {	

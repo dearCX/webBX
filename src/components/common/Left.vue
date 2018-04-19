@@ -1,10 +1,6 @@
 <template>
 		<div class="left">
 			<ul>
-				<!-- <li v-for="item of leftList" v-on:click="changeTitle(item)" :class="{active:item.id==nowId}" >
-					<span></span>
-					{{item.title}}
-				</li>	 -->
 				<li v-for="(item,index) in leftList" v-on:click="changeTitle(item)" :class="{active:item.id==nowId}">
 					<span></span>
 					<router-link :to='item.path'>{{item.title}}</router-link>

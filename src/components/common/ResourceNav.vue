@@ -16,11 +16,11 @@ export default {
     data(){
         return{
                 resourceFilter:[               
-                    {text:'学科资源',path:'/FilterResource/SubjectResource',id:'SubjectResource'},   
-                    {text:'区域资源',path:'/FilterResource/',id:'AreaResource'},   
-                    {text:'校本资源',path:'/FilterResource/SchoolResource',id:'SchoolResource'},   
-                    {text:'特色微课',path:'/FilterResource/SpecialClass',id:'SpecialClass'},   
-                    {text:'优客专区',path:'/FilterResource/HightQualityClass',id:'HightQualityClass'}
+                    {text:'学科资源',path:'/FilterResource/SubjectResource?id=SubjectResource',id:'SubjectResource'},   
+                    {text:'区域资源',path:'/FilterResource/AreaResource?id=AreaResource',id:'AreaResource'},   
+                    {text:'校本资源',path:'/FilterResource/SchoolResource?id=SchoolResource',id:'SchoolResource'},   
+                    {text:'特色微课',path:'/FilterResource/SpecialClass?id=SpecialClass',id:'SpecialClass'},   
+                    {text:'优客专区',path:'/FilterResource/HightQualityClass?id=HightQualityClass',id:'HightQualityClass'}
                 ],
                 filterId:'AreaResource',
                 search:''
@@ -35,6 +35,10 @@ export default {
 				path:'/SearchResource'
 			});		
         }
+    },
+    created(){
+        this.filterId=this.$router.history.current.query.id;
+        console.log(this.$router.history.current.query.id)
     }
 }
 </script>

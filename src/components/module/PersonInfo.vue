@@ -1,64 +1,43 @@
 <template>
-	<div class="mainContainer">
-		<div class="right">
-			<p class="title">
-				<a href="#">个人资料</a> 
-			</p>
-			<form>
-				<div class="personCont">
-					<img src="img/headImg.png" width="150px;" height="150px;" align="absbottom"/>
-					<input type="button" class="up" value="上传头像"/>
-					<span class="intro">"图像格式：jpg    png  gif    格式"</span>
-				</div>
-				<div class="personInfo">
-					<p>账号：admin</p>
-					<p>账号：admin</p>
-					
-					个性签名：
-					<div contenteditable="true" id="infoDivs">
-						无
-					</div>
-					<div style="clear: both;"></div>
-					<input type="submit" value="编辑" id="update" />
-				</div>
-				
-				
-			</form>
-			
-			
-			
-			
-			
-		</div>
-		
+	<div class="right-container">
+		<p class="title">
+			<a href="javascript:void(0);">个人资料</a> 
+		</p>
+		<form>
+			<div class="personCont">
+				<img src="../../assets/imgs/space/headImg.png" width="150px;" height="150px;" align="absbottom"/>
+				<input type="button" class="up" value="上传头像"/>
+				<span class="intro">"图像格式：jpg    png  gif    格式"</span>
+			</div>
+			<div class="personInfo">
+				<p>账号：<span>admin</span></p>
+				<p>姓名：<span>书拉密女</span></p>
+				<p>个性签名：</p>
+				<textarea placeholder="无"></textarea>
+				<button type="button" id="update">编辑</button>
+			</div>
+		</form>
 	</div>
 </template>
 <style scoped>
-	.mainContainer{
-		width: 1200px;
-		margin: auto;
-		margin-top: 40px;
+	.right-container{
+        float: left;
+		width: 940px;
+        min-height: 560px;
+		margin-left: 20px;
+        padding: 40px 60px 40px 60px;
+		background-color: #fff;
+        border: 1px solid #e9e9e9;
 	}
-	.right{
-		width: 815px;
-		padding: 40px 60px 40px 60px;
-		height: 559px;
-		border: 1px solid #e9e9e9;
-		margin-left: 21px;
-		float: left;
-	}
-	.right .title{
-		font-size: 20px;
-		color: #666666;
+	.right-container .title{
 		border-bottom: 1px solid #e9e9e9; 
 	}
-	.right .title a{
+	.right-container .title a{
 		display: inline-block;
-		text-decoration: none;
 		font-size: 20px;
-		color: #666666;
+		color: #666;
 		padding-bottom: 20px;
-		border-bottom: 1px solid #000; 
+		border-bottom: 1px solid #333; 
 	}
 	.personCont{
 		width: 826px;
@@ -75,6 +54,7 @@
 		margin-left: 30px;
 		margin-right: 30px;
 		border-radius: 5px;
+		cursor: pointer;
 	}
 	.intro{
 		font-size: 14px;
@@ -87,10 +67,20 @@
 		color: #666666;
 	}
 	.personInfo p{
-		height: 70px;
-		line-height: 70px;
+		margin-top: 38px;
 		font-size: 14px;
-		
+		color: #666;
+	}
+	.personInfo p span{
+		color: #333;
+	}
+	.personInfo textarea{
+		width: 360px;
+		height: 100px;
+		padding-top: 5px;
+		padding-left: 5px;
+		margin-top: 10px;
+		border:1px solid #eee;
 	}
 	#infoDivs{
 		width: 350px;
@@ -109,6 +99,10 @@
 		border: none;
 		margin-top: 20px;
 		margin-left: 274px;
+		cursor: pointer;
+	}
+	#update:focus{
+		outline: none;
 	}
 </style>
 

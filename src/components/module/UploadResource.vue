@@ -160,7 +160,7 @@
 				</div>
 			</div>			
 		</Modal>
-		<Page :total="totalCount" show-elevator show-total v-if="resourceList.length>0" @on-change="changePage"></Page>			
+		<Page :total="totalCount" :current="params.pageIndex" show-elevator show-total v-if="resourceList.length>0" @on-change="changePage"></Page>			
 	</div>
 	
 </template>
@@ -188,7 +188,7 @@ export default {
 			params:{				
 				pageIndex:1,
 				pageSize:10,
-				token:"354374bbf8b6e0ef44b26e13eb1900cb674df11abdc98cf4f79a64a78952d3886943ba77c3f87fb94d45cf2aa30b11610662c6fa2a974a261019f03c72a9cb066fd16b92ae1c1cf28228c026138f73b739e5a7e794ac4b05ad52b7f62056135b1a127020233d4a4ec8c717953888324ad31911382e8f3060810ec7d6a50b775a0c499c805df9d0bb77651f5931a3a1433d6184f3555cc9d908bb4fb24aba4adc08311f5505777ccab3fbefbed52b46b4fa749c72b6f1cd2426bb759ed73b94f8d863cbf69239fa5864a65263c548507827629f1852ae0aea0b038f0691ff346098dd4d940ef1c265"
+				token:this.$storage.getStorage("token")
 			},
 			withDisabledNode:1,
 			open:false,
@@ -402,6 +402,8 @@ export default {
 				name:this.name,
 				periodId:this.periodId,
 				subjectId:this.subjectId,
+				versionId:this.bookId,
+				textbookId:this.textBookId,
 				pageIndex:this.params.pageIndex,
 				pageSize:this.params.pageSize,
 				token:this.params.token
@@ -439,11 +441,7 @@ export default {
 			this.subjectId = '';
 			this.period = name;
 			this.selData = this.period;
-			// if(this.listsubject[id] == undefined){
-			// 	this.subjectList = [];
-			// }else{
-			// 	this.subjectList = this.listsubject[id];        
-			// }      
+			    
 			this.periodId = id;
 
 			this.getSubjectList(id);
@@ -457,11 +455,7 @@ export default {
 			this.bookId = '';
 			this.subject = name;
 			this.selData = this.period+'/'+this.subject;
-			// if(this.listbook[id] == undefined){
-			// 	this.bookList = [];
-			// }else{
-			// 	this.bookList = this.listbook[id];
-			// }
+			
 			this.subjectId = id;
 			this.getBookList(id);
 
@@ -472,11 +466,7 @@ export default {
 		
 			this.book = name;
 			this.selData = this.period+'/'+this.subject+'/'+this.book;
-			// if(this.listtexBook[id] == undefined){
-			// 	this.textBookList = [];
-			// }else{
-			// 	this.textBookList = this.listtexBook[id];
-			// }
+			
 			this.bookId = id;
 			this.getTextBookList(id);
 

@@ -107,7 +107,7 @@
             </div>
             <SpaceList></SpaceList> 
         </div>
-        <SpaceDynamic></SpaceDynamic>    
+        <SpaceDynamic :infos="latestNews"></SpaceDynamic>    
       </div>
       <div id="open-box">
             <div class="open-title">
@@ -158,7 +158,8 @@ export default {
             nowId:'manager',
             nowColor:'#54CCC8',
             nowPosition:'-2',
-            currentTab:'SpaceTab'     
+            currentTab:'SpaceTab' ,
+            latestNews:[]    
         }
     },
     methods:{

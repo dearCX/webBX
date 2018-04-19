@@ -2,7 +2,7 @@
 	<div class="mainContainer">
 		<div class="right">
 			<p class="title">
-				<span>创建微课程</span> 
+				<span>创建课程</span> 
 			</p>			
 			<div class="content">
 				<ul class="stepUl">
@@ -32,7 +32,7 @@
 					</li>
 				</ul>				
 				<div class="fontsStyle">
-					<span><Icon type="asterisk" color="#ed3f14" size=5 v-if="name == ''"></Icon>微课程名称：</span> 
+					<span><Icon type="asterisk" color="#ed3f14" size=5 v-if="name == ''"></Icon>课程名称：</span> 
 					<input type="text" v-model="name" class="number" placeholder="高考集合"/>
 				</div>
 				<!-- <div class="fontsStyle">
@@ -105,7 +105,7 @@ export default {
 					emptyInfo:'带*号的为必填项或者必选项'
 				},
 				params:{
-					token:"354374bbf8b6e0ef44b26e13eb1900cb674df11abdc98cf4f79a64a78952d3886943ba77c3f87fb94d45cf2aa30b11610662c6fa2a974a261019f03c72a9cb066fd16b92ae1c1cf28228c026138f73b739e5a7e794ac4b05ad52b7f62056135b1a127020233d4a4ec8c717953888324ad31911382e8f3060810ec7d6a50b775a0c499c805df9d0bb77651f5931a3a1433d6184f3555cc9d908bb4fb24aba4adc08311f5505777ccab3fbefbed52b46b4fa749c72b6f1cd2426bb759ed73b94f8d863cbf69239fa5864a65263c548507827629f1852ae0aea0b038f0691ff346098dd4d940ef1c265"
+					token:this.$storage.getStorage("token")
 				},
 				periodList:[
 					{id:1,name:'高中'},

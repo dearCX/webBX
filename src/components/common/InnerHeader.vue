@@ -3,13 +3,13 @@
 		<div id="spaceTitle">
 			<span>阿里巴巴的空间</span>
 			<div id="infoSet">
-				<div>
-					<span @click="toIndex">平台首页</span>
+				<div @click="toIndex">
+					<span>平台首页</span>
 				</div>
 				<div class="set">
 					<span>设置</span> 
 					<div class="login-out">
-						<p>个人中心</p>
+						<p @click="toPersonCenter">个人中心</p>
 						<p @click="login">退出</p>
 					</div>
 				</div>
@@ -27,32 +27,42 @@
 
 <script>
 export default {
-  name: 'v-header',
-  data () {
-    return {
-      relations:[
-            {text:'空间首页',path:'/MySpace/',id:'sapceIndex'},   
-            {text:'我的资源',path:'/MySpace/MyResource',id:'myResource'},   
-            {text:'微课程',path:'/MySpace/MinClasses',id:'minClasses'},   
-            {text:'学习成果',path:'/MySpace/Achievements',id:'achievements'},   
-            {text:'我的应用',path:'/MySpace/MyApplication',id:'myApplication'},
-            {text:'我的通讯录',path:'/MySpace/MyList',id:'myList'},   
-            {text:'展示空间',path:'/Space',id:'showSpace'}
-      ],
-      nowId:'sapceIndex'
-    }
-  },
-  methods:{
-    relationClick(item){  
-      this.nowId=item.id; 
+	name: 'v-header',
+	data () {
+		return {
+			relations:[
+					{text:'空间首页',path:'/MySpace/',id:'sapceIndex'},   
+					{text:'我的资源',path:'/MySpace/MyResource',id:'myResource'},   
+					{text:'课程',path:'/MySpace/MinClasses',id:'minClasses'},   
+					{text:'学习成果',path:'/MySpace/Achievements',id:'achievements'},   
+					{text:'我的应用',path:'/MySpace/MyApplication',id:'myApplication'},
+					{text:'我的通讯录',path:'/MySpace/MyList',id:'myList'},   
+					{text:'展示空间',path:'/ShowSpace',id:'showSpace'}
+			],
+			nowId:'sapceIndex'
+		}
+	},
+	methods:{
+		relationClick(item){  
+			this.nowId=item.id; 
 		},
 		login(){
 			this.$router.push('/Login');
 		},
 		toIndex(){
 			this.$router.push('/');
+		},
+		toPersonCenter(){
+			this.$router.push('/MySpace/PersonalCenter');
 		}
-  }  
+	},
+	mounted(){
+		if(this.$route.query.spaceTitle != ''){
+			this.nowId = this.$route.query.spaceTitle;
+		}else{
+			this.nowId ='sapceIndex';
+		}
+	}  
 }
 </script>
 <style scoped>
