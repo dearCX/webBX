@@ -50,15 +50,16 @@ export default {
 <style scoped>
     .classes-content{        
         width: 100%;
-        display: -webkit-flex; 
-        display: flex;
-        flex-direction: row ; 
-        flex-wrap: wrap;
-        justify-content: space-between;
+        overflow: hidden;
     }
-    .classes-content li{      
+    .classes-content li{  
+        float: left;    
+        margin-right: 53px;
         width: 260px;
         margin-bottom: 20px;        
+    }
+    .classes-content li:nth-child(4n){  
+        margin-right: 0;     
     }
     .classes-content li:hover .classes-img p{      
         display: block;  

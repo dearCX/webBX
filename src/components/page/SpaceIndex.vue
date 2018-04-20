@@ -24,13 +24,13 @@
 				</div>
 				
 				<div class="homework">
-					<img src="../../assets/imgs/space/class.jpg" alt="头像" align="absmiddle"/>
+					<img src="../../assets/imgs/space/class.png" alt="头像" align="absmiddle"/>
 					<span>高三一班</span>
 					<a class="bgImg"></a>
 				</div>
 				
 				<div class="homework">
-					<img src="../../assets/imgs/space/class.jpg" alt="头像" align="absmiddle"/>
+					<img src="../../assets/imgs/space/work.png" alt="头像" align="absmiddle"/>
 					<span>作业</span>
 				</div>
 				
@@ -74,11 +74,20 @@
 								<p class="className">
 									<span>上传了</span>&nbsp;{{item.file}}
 								</p>								
-								<p class="comment">
-									<a>赞一个</a>
-									<a>分享</a>
-									<a>分享</a>
-								</p>
+								<div class="comment">
+									<p>
+										<span></span>
+										<a href="javascript:void(0);">赞一个</a>
+									</p>
+									<p>
+										<span class="share"></span>
+										<a href="javascript:void(0);">分享</a>
+									</p>
+									<p>
+										<span class="review"></span>
+										<a href="javascript:void(0);">评论</a>
+									</p>
+								</div>
 							</div>
 						</li>
 					</ul>
@@ -90,9 +99,9 @@
 			
 			<div class="right">
 				<div class="threeBtn">
-					<button>上传资源</button>
-					<button>写文章</button>
-					<button>班级详情</button>
+					<button type="button" @click="toLoadResource">上传资源</button>
+					<button type="button">写文章</button>
+					<button type="button">班级详情</button>
 				</div>
 				<div class="myView">
 					<p class="viewTitle more-focus">
@@ -169,6 +178,11 @@ export default {
 	methods:{
 		changeStatus(item){
 			this.localStatus = item.id;
+		},
+		toLoadResource(){
+			this.$router.push({
+				path:'/MySpace/LoadResource/1',  				
+			});
 		}
 	}
 }
@@ -189,19 +203,18 @@ export default {
 	.bgColor{
 		width: 100%;
 		height: 370px;
-		background: rgb(78, 167, 255);
+		background: #47a2ff;
 	}
 	.spaceCont{
 		width: 1200px;
-		height: 1000px;/**/
+		height: 1000px;
 		margin: -336px auto 0;
 	}
 	.spaceCont .left{
 		float: left;
 		width: 300px;
-		height: 800px;/**/
+		height: 800px;
 	}
-	
 	#name{
 		width: 300px;
 		padding-left: 20px;
@@ -209,7 +222,6 @@ export default {
 		height: 122px;
 		background: rgb(255, 255, 255);
 	}
-	
 	#name img{
 		margin-top: 20px;
 		float: left;
@@ -276,10 +288,12 @@ export default {
 	.bgImg{
 		display: inline-block;
 		width: 20px;
-		height: 15px;
-		background: url(../../assets/imgs/space/TeacherZoneIcon.png);
-		background-position: 0 0;
+		height: 18px;
+		background: url('../../assets/imgs/space/TeacherZoneIcon.png') no-repeat 0 0;		
 		margin-left: 100px;
+	}
+	.bgImg:hover{
+		background-position: 0 -20px;
 	}
 	#code{
 		width: 300px;
@@ -299,7 +313,7 @@ export default {
 		float: left;
 		width: 30px;
 		height: 40px;
-		background: url(../../assets/imgs/space/TeacherZoneIcon.png) -25px 0;
+		background:url('../../assets/imgs/space/TeacherZoneIcon.png') no-repeat -25px 0;
 	}
 	#code .fonts{
 		font-size: 18px;
@@ -432,13 +446,42 @@ export default {
 	.spaceList .className span{
 		color: #999;
 	}	
-	.comment{
-		text-align: left;
-		margin-bottom: 20px;
+	.comment{		
+		overflow: hidden;
+		font-size: 14px;
+		margin-bottom: 30px;
+		margin-top: 15px;
+	}
+	.comment p{
+		float: left;
+		margin-right: 45px;
 	}
 	.comment a{
+		color: #7b8085;
+	}
+	.comment span{
+		height: 24px;
+		padding-left: 26px;
+		margin-right: 5px;
 		font-size: 14px;
 		color: #7b8085;
+		cursor: pointer;
+		background: url('../../assets/imgs/space/TeacherZoneIcon.png') no-repeat -110px -3px;	
+	}
+	.comment span.share{
+		background-position: -85px -4px;	
+	}
+	.comment span.review{
+		background-position: -55px -5px;	
+	}
+	.comment span:hover{
+		background-position: -110px -26px;
+	}
+	.comment span.share:hover{
+		background-position: -85px -26px;
+	}
+	.comment span.review:hover{
+		background-position: -55px -25px;
 	}
 	#load-more{
 		width: 140px;
@@ -475,6 +518,9 @@ export default {
 		border: none;
 		border-radius: 5px;
 		cursor: pointer;
+	}
+	.right .threeBtn button:hover{
+		background: #47a2ff;
 	}
 	.myView{
 		width: 100%;
