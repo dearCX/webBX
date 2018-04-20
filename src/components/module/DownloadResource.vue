@@ -41,7 +41,7 @@
 		<div class="operator">	
 			<button v-if="resourceList.length>1" @click="showBatch" :class="{active:ifBatch==true}">批量设置</button>
 		</div>		
-		<div class="batch-modify" v-show="ifBatch">
+		<div class="batch-modify" v-show="ifBatch && resourceList.length>1">
 			<label for="all-check">全选</label> 
 			<input type="checkbox" id="all-check" @click="selectAll"/>	
 			<span @click="pushAll">推送</span>
@@ -51,7 +51,7 @@
 			<li v-for="item of resourceList">
 				<div>
 					<p>
-						<input type="checkbox" :value="item.resourceLocalId" v-model="selectArr" v-if="ifBatch" @click="selectOne"/>
+						<input type="checkbox" :value="item.resourceLocalId" v-model="selectArr" v-show="ifBatch" @click="selectOne"/>
 					</p>
 					<img :src="item.fileSuffix | fillType"/>				
 					<div class="doc-content">
@@ -201,17 +201,25 @@ export default {
 			var d = new Date(input);
 			var year = d.getFullYear();
 			var month = d.getMonth() + 1;
-			var day = d.getDate();
-			// var day = d.getDate() <10 ? '0' + d.getDate() : '' + d.getDate();
-			// var hour = d.getHours();
-			// var minutes = d.getMinutes();
-			// var seconds = d.getSeconds();
+			var day = d.getDate();			
 			return  year+ '-' + month + '-' + day;
 		}
 	},
 	methods:{
 		changeTitle(item){
-			this.isActive = false;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;
+
+			this.periodId = '';
+			this.subjectId = '';
+			this.bookId = '';
+			this.textBookId = '';
+			this.selData = '';
+			this.subjectList = [];
+			this.bookList = [];
+			this.textBookList = [];
+
 			this.selTitle=item.id; 
 			this.params.pageIndex = 1;
 			this.getResourceList();
@@ -322,6 +330,8 @@ export default {
 				name:this.name,
 				periodId:this.periodId,
 				subjectId:this.subjectId,
+				versionId:this.bookId,
+				textbookId:this.textBookId,
 				pageIndex:this.params.pageIndex,
 				pageSize:this.params.pageSize,
 				token:this.params.token
@@ -347,9 +357,19 @@ export default {
 			});
 		},
 		searchResource(){	
+			if(this.name.trim() == ''){
+				this.name = '';				
+			}
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+			this.params.pageIndex = 1;
 			this.getResourceList();
 		},
 		changePage(page){
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.params.pageIndex = page;
 			this.getResourceList();
 		},
@@ -364,6 +384,9 @@ export default {
 
 			this.getSubjectList(id);
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 
 		},
@@ -378,6 +401,9 @@ export default {
 			this.getBookList(id);
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;
 			this.getResourceList();
 		},
 		gettexBook(id,name){
@@ -389,6 +415,9 @@ export default {
 			this.getTextBookList(id);
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 		},
 		seltexBook(id,name){
@@ -398,6 +427,9 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;
 			this.getResourceList();
 		},
 		openSel(){
@@ -419,6 +451,9 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;
 			this.getResourceList();
 		},
 		deleteResource(resourceId){
@@ -534,7 +569,6 @@ export default {
             } else { 
               _this.selectArr = [];
               _this.resourceList.forEach(function(item, i) {
-				  console.log(item.resourceLocalId);
                 _this.selectArr.push(item.resourceLocalId);
               });
             }
@@ -551,7 +585,6 @@ export default {
 				this.$Message.info(this.msg.unselectInfo);
 			}else{			
 				var resourceStr = this.selectArr.join(',');	
-				this.changePage(1);	
 				this.deleteResource(resourceStr);				
 			}
 		},		

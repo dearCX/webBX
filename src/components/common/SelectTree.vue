@@ -2,8 +2,47 @@
     <div>
         <div id="load-resource">
             <div class="left">
-                <div>                  
-                </div> 
+                <div class="leftHead" @click="showSel">
+                    <span class="leftTitle">{{per2sub}} <br> <small :title="ver2text">{{ver2text}}</small></span>
+                    <Icon type="chevron-down"></Icon>
+                    <transition name="mybox">
+                    	<div :class="{selDown:true,top74:resourceKindId==1,top47:resourceKindId==2}" v-show="boxshow">
+	                        <p>
+	                            <span>学 段：</span>
+	                            <select v-model="sel.periodId">
+	                                <option value="0">请选择学段</option>
+	                                <option value="3">小学</option>
+	                                <option value="2">初中</option>
+	                                <option value="1">高中</option>
+	                            </select>
+	                        </p>
+	                        <p>
+	                            <span>学 科：</span>
+	                            <select v-model="sel.subjectId">
+	                                <option value="0">请选择学科</option>
+	                                <option v-for="item in subjectList" :value="item.subjectId">{{item.subjectName}}</option>
+	                            </select>
+	                        </p>
+	                        <p v-show="resourceKindId==1">
+	                            <span>版 本：</span>
+	                            <select v-model="sel.versionId">
+	                                <option value="0">请选择版本</option>
+	                                <option v-for="item in bookList" :value="item.id">{{item.name}}</option>
+	                            </select>
+	                        </p>
+	                        <p v-show="resourceKindId==1">
+	                            <span>册 别：</span>
+	                            <select v-model="sel.textbookId">
+	                                <option value="0">请选择册别</option>
+	                                <option v-for="item in textBookList" :value="item.textbookId">{{item.textbookName}}</option>
+	                            </select>
+	                        </p>
+	                        <p class="text-center">
+	                            <span class="bxw-btn-info-xs" @click.stop="mySure">确定</span>
+	                        </p>
+	                    </div>
+                	</transition>
+                </div>
                 <ul class="section" v-if="nodeTree.length<1"> 
 					<li>暂无任何资源数据</li>  
 				</ul>                
@@ -40,6 +79,12 @@
 import qs from "qs"
 export default {
   name:'SelectTree',
+  props:{
+  	resourceKindId:{
+            type:Number,
+            required:true
+        }
+  },
     data(){
          return {
             params:{	
@@ -56,11 +101,20 @@ export default {
 			subject:'',
 			book:'',
 			texBook:'',
+			boxshow:false,
+			per2sub:'初中数学',
+			ver2text:'人教版七年级上册',
 			classList:[
 				{id:1,name:'高中'},
 				{id:2,name:'初中'},
 				{id:3,name:'小学'},
-			],			
+			],
+			sel:{
+				periodId:2,
+	            subjectId:2,
+	            versionId:293,
+	            textbookId:1343,
+			},			
 			selData:'',           
             nodeTree:[],
             loadId1:'',
@@ -70,80 +124,107 @@ export default {
             foldId2:''
         }
     },
+    watch:{
+        'sel.periodId': 'filterPer',
+        'sel.subjectId': 'filterSub',
+        'sel.versionId': 'filterVer',
+        deep:true
+    },
     methods:{
+    	filterPer:function () {
+            this.sel.subjectId=0;
+            this.sel.versionId=0;
+            this.sel.textbookId=0;
+            this.subList=[];
+            this.verList=[];
+            this.textList=[];
+            if(this.sel.periodId == '0'){
+                return;
+            }else{
+                this.getSubjectList(this.sel.periodId);
+            }
+        },
+        filterSub:function () {
+            this.sel.versionId=0;
+            this.sel.textbookId=0;
+            this.verList=[];
+            this.textList=[];
+            if(this.sel.subjectId == '0'){
+                return;
+            }else{
+                this.getVersionList(this.sel.periodId,this.sel.subjectId);
+            }
+        },
+        filterVer:function () {
+            this.sel.textbookId=0;
+            this.textList=[];
+            if(this.sel.versionId == '0'){
+                return
+            }else{
+                this.getTextbookList(this.sel.periodId,this.sel.subjectId,this.sel.versionId);
+            }
+        },
+        showSel:function () {
+            this.boxshow = true;
+        },
+        mySure:function () {
+        	this.boxshow = false;
+            // console.log(this.sel.textbookId)
+            // if(this.sel.textbookId){
+            //     $('.selDown').slideUp(200);
+            //     this.per2sub=$('#pre option:checked').text()+$('#sub option:checked').text();
+            //     this.ver2text=$('#ver option:checked').text()+$('#tex option:checked').text();
+            //     getNodeTree(this.sel);
+            //     this.uploadPram=this.sel;
+            // }
+        },
         tabLoad1(item){
             this.loadId1 = item.id;  
 			this.loadId2 = '';
 			this.loadId3 = '';
 			if(this.resourceKindId == 1){
-                this.bid1 = item.id; 
-                this.bname1 = item.name;           
+                this.params.bid1 = item.id; 
+                // this.params.bname1 = item.name;           
 			}else if(this.resourceKindId == 2){
-                this.kid1 = item.id;
-                this.kname1 = item.name; 
+                this.params.kid1 = item.id;
+                // this.params.kname1 = item.name; 
             }
-            this.fileName = item.name;
-            this.getUniCode();
+            this.$root.$emit('getResourceList',this.params);
         },
 		tabLoad2(item){
             this.loadId2 = item.id; 
 			this.loadId1 = '';
 			this.loadId3 = ''; 
 			if(this.resourceKindId == 1){
-                this.bid2 = item.id; 
-                this.bname2 = item.name;              
+                this.params.bid2 = item.id; 
+                // this.params.bname2 = item.name;              
 			}else if(this.resourceKindId == 2){
-                this.kid2 = item.id;
-                this.kname2 = item.name; 
+                this.params.kid2 = item.id;
+                // this.params.kname2 = item.name; 
             }
-            this.fileName = item.name;
-            this.getUniCode();
+            console.log(item)
+            console.log(this.params.bid2)
+            this.$root.$emit('getResourceList',this.params);
         },
 		tabLoad3(item){
             this.loadId3 = item.id; 
 			this.loadId1 = '';
 			this.loadId2 = ''; 
 			if(this.resourceKindId == 1){
-                this.bid3 = item.id;
-                this.bname3 = item.name;              
+                this.params.bid3 = item.id;
+                // this.params.bname3 = item.name;              
 			}else if(this.resourceKindId == 2){
-                this.kid3 = item.id;
-                this.kname3 = item.name; 
+                this.params.kid3 = item.id;
+                // this.params.kname3 = item.name; 
             }
-            this.fileName = item.name;
-            this.getUniCode();
+            this.$root.$emit('getResourceList',this.params);
         },
 		unfold1(item){              
             this.foldId1 = item.id;
         },
         unfold2(item){              
             this.foldId2 = item.id;
-        },            
-        getResourceList(){
-            this.$http.post('/web/coursebook/listResourceLocal.do',qs.stringify({				
-				periodId:this.periodId,
-				subjectId:this.subjectId,				
-				withDisabledNode:1
-			})).then(res => {	
-				if(res.status != 200){
-					this.$Message.error('请求失败请重试');
-				}else{
-					let result = res.data;
-					if(result.status != 0){
-						this.$Message.error('请求资源失败，请重试');
-					}else{	
-						if(result.data.children instanceof Array && result.data.children.length>0){
-                            this.nodeTree = result.data.children;
-						}else{
-							this.nodeTree = [];
-						}						
-					}
-				}			
-				
-			}).catch(function (error) {
-				alert(error);
-			});
-        },            
+        },          
         getKnowTree(){
             this.$http.post('/web/coursebook/getKnowledgePointTree.do',qs.stringify({				
 				periodId:this.periodId,
@@ -219,7 +300,6 @@ export default {
 						}else{
                             this.subjectList = [];
                             this.nodeTree = []
-                            this.open=false;
 						}						
 					}
 				}			
@@ -228,7 +308,7 @@ export default {
 				alert(error);
 			});
 		},	
-		getBookList(subjectId){
+		getVersionList(subjectId){
 			this.$http.post('/web/coursebook/listBookVersion.do',qs.stringify({				
 				periodId:this.periodId,
 				subjectId:subjectId,
@@ -307,7 +387,6 @@ export default {
                 this.getBookList(id);
             }else if(this.resourceKindId == 2){
                 this.selData = this.period+'/'+this.subject;
-                this.open = false;
                 this.getKnowTree();   
             }
 		},
@@ -325,15 +404,97 @@ export default {
 		}
     },
     created(){
-    	this.getKnowTree()
+    	this.getKnowTree();
+    	console.log(this.resourceKindId)
     }
 }
 </script>
 <style scoped>
+.text-center{
+	text-align: center;
+}
 #load-resource{
     min-height: 900px;
     overflow-y:auto;
 }
+.leftHead{
+	margin-top: 20px;
+    width: 220px;
+    padding: 10px 20px;
+    background-color: #1caaf1;
+    text-align: center;
+    position: relative;
+}
+.leftTitle{
+    font-size: 16px;
+    color: #fff;
+    display: inline-block;
+    line-height: 24px;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+.leftHead>i{
+    color:#fff;
+    font-size: 16px;
+    position: absolute;
+    top:28px;
+    right: 10px;
+}
+.selDown{
+    text-align: left;
+    position: absolute;
+    left:0;
+    width: 220px;
+    padding: 15px;
+    box-sizing: border-box;
+    border: 1px solid #e9e9e9;
+    background-color: #f8f8f8;
+    overflow: hidden;
+    z-index: 10;
+}
+.top74{
+	top:74px;
+}
+.top47{
+	top:47px;
+}
+.selDown>p{
+    line-height: 40px;
+}
+.selDown>p select{
+    width: 125px;
+    height: 30px;
+    border: 1px solid #e9e9e9;
+    border-radius: 4px;
+    padding-left: 7px;
+    color: #666;
+}
+.bxw-btn-info-xs{
+    display: inline-block;
+    padding:0 25px;
+    margin-top: 15px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 4px;
+    color:#fff;
+    cursor: pointer;
+    text-decoration: none;
+    background-color: #1daaf3;
+}
+.mybox-leave-active,.mybox-enter-active{
+    transition:  all .5s; 
+}
+.mybox-leave-active,.mybox-enter{
+	padding: 0 15px;
+    height:0px !important;
+}
+.mybox-leave,.mybox-enter-active{
+	padding: 15px;
+    height: 242px;
+}
+
 .section{
     width: 100%;
     height: 550px;    

@@ -52,15 +52,8 @@ export default {
 			classList:[],
 			resourceList:[],
 			msg:{
-				unselectInfo:'您还没有选择资源，请先选择',
-				unselectClassify:'您还没有选择类别，请先选择',
 				reqError:'请求失败请重试',
-				resError:'请求资源失败，请重试',
-				moveInfo:'移动资源成功',
-				deleteInfo:'删除资源成功',
-				shareInfo:'分享资源成功',
-				pushInfo:'推送资源成功',
-				setInfo:'设置类别成功'
+				resError:'请求资源失败，请重试'
 			}
 	  	}
 	},
@@ -107,11 +100,6 @@ export default {
 		}
 	},
 	methods:{
-		changeTitle(item){
-			this.selTitle=item.id; 
-			this.params.pageIndex = 1;
-			this.getResourceList();
-		},
 		getPushResource(){
 			this.$http.post('/web/class/a/listJoinClassInfo.do',qs.stringify({
 				token:this.params.token
@@ -159,15 +147,19 @@ export default {
 				alert(error);
 			});
 		},
-		searchResource(){			
+		searchResource(){	
+			if(this.name.trim() == ''){
+				this.name = '';
+			}
+			this.params.pageIndex = 1;
 			this.getResourceList();
 		},
-		changePage(page){
+		changePage(page){				
 			this.params.pageIndex = page;
 			this.getResourceList();
 		},
 		changeClass(value){
-			this.models.parentClass = value;
+			this.models.parentClass = value;			
 			this.params.pageIndex = 1;
 			this.getResourceList();
 		}

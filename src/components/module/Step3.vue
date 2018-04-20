@@ -94,7 +94,7 @@ export default {
 			dataLoad:[],
 			fileName:'',
 			options: {
-                target: 'http://192.168.8.251/banxue/web/chunkUpload/test/a/uploadChunkFile',
+                target: 'http://192.168.8.251/banxue/web/chunkUpload/a/uploadChunkFile',
                 testChunks: false,
                 forceChunkSize:true,
                 simultaneousUploads:1,

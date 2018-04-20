@@ -42,7 +42,7 @@
 			<button @click="toLoadResource">上传</button>
 			<button v-if="resourceList.length>1" @click="showBatch" :class="{active:ifBatch==true}">批量设置</button>
 		</div>		
-		<div class="batch-modify" v-show="ifBatch">
+		<div class="batch-modify" v-show="ifBatch && resourceList.length>1">
 			<label for="all-check">全选</label> 
 			<input type="checkbox" id="all-check" @click="selectAll"/>
 			<span @click="shareAll">分享</span>
@@ -292,6 +292,19 @@ export default {
 			});
 		},
 		changeTitle(item){
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+
+			this.periodId = '';
+			this.subjectId = '';
+			this.bookId = '';
+			this.textBookId = '';
+			this.selData = '';
+			this.subjectList = [];
+			this.bookList = [];
+			this.textBookList = [];
+
 			this.selTitle=item.id; 
 			this.params.pageIndex = 1;
 			this.getResourceList();
@@ -428,10 +441,21 @@ export default {
 				alert(error);
 			});
 		},
-		searchResource(){			
+		searchResource(){	
+
+			if(this.name.trim() == ''){
+				this.name = '';
+			}
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+			this.params.pageIndex = 1;
 			this.getResourceList();
 		},
 		changePage(page){
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.params.pageIndex = page;
 			this.getResourceList();
 		},
@@ -446,6 +470,9 @@ export default {
 
 			this.getSubjectList(id);
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 
 		},
@@ -460,6 +487,9 @@ export default {
 			this.getBookList(id);
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 		},
 		gettexBook(id,name){
@@ -471,6 +501,9 @@ export default {
 			this.getTextBookList(id);
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 		},
 		seltexBook(id,name){
@@ -480,6 +513,9 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 		},
 		openSel(){
@@ -501,6 +537,10 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+
 			this.getResourceList();
 		},		
 		deleteResource(resourceId){
@@ -852,7 +892,6 @@ export default {
             } else { 
               _this.selectArr = [];
               _this.resourceList.forEach(function(item, i) {
-				  console.log(item.resourceLocalId);
                 _this.selectArr.push(item.resourceLocalId);
               });
             }
@@ -868,9 +907,8 @@ export default {
 			if(this.selectArr.length < 1){
 				this.$Message.info(this.msg.unselectInfo);
 			}else{			
-				var resourceStr = this.selectArr.join(',');	
-				this.changePage(1);	
-				this.deleteResource(resourceStr);				
+				var resourceStr = this.selectArr.join(',');					
+				this.deleteResource(resourceStr);
 			}
 		},
 		shareAll(){

@@ -66,7 +66,7 @@
                 <p>上传说明：</p>
                 <p>1、可上传文件格式为doc、docx、ppt、pptx、xls、xlsx、jpg、png、bmp、pdf、txt、mp3、rmvb、mp4、avi</p>
                 <p>2、建议单个文件不要超过1G</p>
-                <p>3、选择左侧教材章节点击上传（鼠标移入），资源自动归类到对应教材和章节</p>
+                <p>3、选择课程目录，出现开始上传按钮，上传成功后视频名称会出现在表格中，如果上传的视频错误，请重新上传</p>
                 <uploader :options="options" :file-status-text="statusText" ref="uploader" @file-success="fileSuccess" class="uploader-example">
                     <uploader-btn :class="{active:bid1 !=''||bid2 !=''||bid3 !=''||kid1 !=''||kid2 !=''||kid3 !=''}">开始上传</uploader-btn>
                     <uploader-list></uploader-list>
@@ -254,7 +254,7 @@ export default {
             uniCode:'',
             uniCodeList:[],
             options: {
-                target: 'http://192.168.8.251/banxue/web/chunkUpload/test/a/uploadChunkFile',
+                target: 'http://192.168.8.251/banxue/web/chunkUpload/a/uploadChunkFile',
                 testChunks: false,
                 forceChunkSize:true,
                 simultaneousUploads:1,

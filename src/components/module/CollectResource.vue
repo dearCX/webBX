@@ -42,17 +42,19 @@
 		<div class="operator">	
 			<button v-if="resourceList.length>1" @click="showBatch" :class="{active:ifBatch==true}">批量设置</button>
 		</div>		
-		<div class="batch-modify" v-show="ifBatch">
+		<div class="batch-modify" v-show="ifBatch && resourceList.length>1">
 			<label for="all-check">全选</label> 
 			<input type="checkbox" id="all-check" @click="selectAll"/>	
 			<span v-if="isActive == false" @click="pushAll">推送</span>
-			<span @click="deleteAll">删除</span>
+			<span v-if="isActive == false" @click="deleteAll">删除</span>
+			<span v-if="isActive == true" @click="deleteAllClass">删除</span>
 		</div>
 		<ul class="resourceCont" v-if="resourceList.length>0">
 			<li v-for="item of resourceList">
 				<div>
 					<p>
-						<input type="checkbox" :value="item.resourceLocalId" v-model="selectArr" v-if="ifBatch" @click="selectOne"/>
+						<input type="checkbox" :value="item.resourceLocalId" v-model="selectArr" v-show="ifBatch&&isActive == false" @click="selectOne"/>
+						<input type="checkbox" :value="item.resourceId" v-model="selectArr" v-show="ifBatch&&isActive == true" @click="selectOne"/>
 					</p>
 					<img v-if="isActive == false" :src="item.fileSuffix | fillType"/>	
 					<img v-if="isActive == true" src="/static/imgs/resource/fileVideo.png"/>				
@@ -92,7 +94,8 @@
 							</p>
 							<div class="edit-content">
 								<span v-if="isActive == false" @click="pushResource(item)">推送</span>
-								<span @click="deleteResource(item.resourceLocalId)">删除</span>
+								<span v-if="isActive == false" @click="deleteResource(item.resourceLocalId)">删除</span>
+								<span v-if="isActive == true" @click="deleteClass(item.resourceId)">删除</span>
 							</div>			
 						</div>								
 					</div>	
@@ -182,6 +185,7 @@ export default {
 				reqError:'请求失败请重试',
 				resError:'请求资源失败，请重试',
 				deleteInfo:'删除资源成功',
+				deleteClassInfo:'删除特色微课成功',
 				pushInfo:'推送资源成功'
 			}
 	  	}
@@ -229,16 +233,42 @@ export default {
 		}
 	},
 	methods:{
-		changeTitle(item){			
+		changeTitle(item){	
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+			
+			this.periodId = '';
+			this.subjectId = '';
+			this.bookId = '';
+			this.textBookId = '';
+			this.selData = '';
+			this.subjectList = [];
+			this.bookList = [];
+			this.textBookList = [];
+
 			this.isActive = false;
 			this.selTitle=item.id; 
 			this.params.pageIndex = 1;
 			this.getResourceList();
 		},
 		selMinClass(){
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+
+			this.periodId = '';
+			this.subjectId = '';
+			this.bookId = '';
+			this.textBookId = '';
 			this.selData = '';
+			this.subjectList = [];
+			this.bookList = [];
+			this.textBookList = [];
+			
 			this.isActive = true;
 			this.selTitle = '';
+			this.params.pageIndex = 1;
 			this.getMinClassList();
 		},		
 		showBatch(){
@@ -374,6 +404,8 @@ export default {
 				name:this.name,
 				periodId:this.periodId,
 				subjectId:this.subjectId,
+				versionId:this.bookId,
+				textbookId:this.textBookId,
 				pageIndex:this.params.pageIndex,
 				pageSize:this.params.pageSize,
 				token:this.params.token
@@ -428,7 +460,14 @@ export default {
 				alert(error);
 			});
 		},
-		searchResource(){	
+		searchResource(){				
+			if(this.name.trim() == ''){
+				this.name = '';
+			}
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
+			this.params.pageIndex = 1;
 			if(this.selTitle == ''){
 				this.getMinClassList();
 			}else{
@@ -436,6 +475,9 @@ export default {
 			}	
 		},
 		changePage(page){
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;
 			this.params.pageIndex = page;
 			if(this.selTitle == ''){
 				this.getMinClassList();
@@ -453,6 +495,9 @@ export default {
 			this.periodId = item.id;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 
 			if(this.selTitle == ''){
 				
@@ -474,6 +519,9 @@ export default {
 			
 			this.subjectId = id;
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 
 			if(this.selTitle == ''){
 				this.getMinClassGrade(id);	
@@ -490,6 +538,9 @@ export default {
 			
 			this.bookId = id;
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 
 			if(this.selTitle == ''){					
 				this.getMinClassList();
@@ -506,6 +557,9 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 			this.getResourceList();
 		},
 		openSel(){
@@ -527,6 +581,9 @@ export default {
 			this.open = false;
 
 			this.params.pageIndex = 1;
+			this.ifBatch = false;	
+			this.selectArr = [];	
+			document.getElementById('all-check').checked = false;	
 
 			if(this.selTitle == ''){					
 				this.getMinClassList();							
@@ -552,6 +609,35 @@ export default {
 							}else{	
 								this.getResourceList();					
 								this.$Message.success(this.msg.deleteInfo);
+								document.getElementById('all-check').checked = false;
+								this.selectArr = [];
+							}
+						}			
+						
+					}).catch(function (error) {
+						alert(error);
+					});                    
+                }
+            });
+		},
+		deleteClass(courseId){
+			this.$Modal.confirm({
+                title: '删除',
+                content: '<p>确定删除吗？</p>',
+                onOk: () => {
+					this.$http.post('/web/microcourse/a/deleteCollectResource.do',qs.stringify({				
+						courseIds:courseId,
+						token:this.params.token
+					})).then(res => {	
+						if(res.status != 200){
+							this.$Message.error(this.msg.reqError);
+						}else{
+							let result = res.data;
+							if(result.status != 0){
+								this.$Message.error(this.msg.resError);
+							}else{	
+								this.getMinClassList();					
+								this.$Message.success(this.msg.deleteClassInfo);
 								document.getElementById('all-check').checked = false;
 								this.selectArr = [];
 							}
@@ -647,8 +733,11 @@ export default {
             } else { 
               _this.selectArr = [];
               _this.resourceList.forEach(function(item, i) {
-				  console.log(item.resourceLocalId);
-                _this.selectArr.push(item.resourceLocalId);
+				  if(_this.selTitle == ''){
+					  	_this.selectArr.push(item.resourceId);
+				  }else{					 
+						_this.selectArr.push(item.resourceLocalId);
+				  }
               });
             }
 		},
@@ -663,9 +752,16 @@ export default {
 			if(this.selectArr.length < 1){
 				this.$Message.info(this.msg.unselectInfo);
 			}else{			
+				var resourceStr = this.selectArr.join(',');					
+				this.deleteResource(resourceStr);	
+			}
+		},
+		deleteAllClass(){
+			if(this.selectArr.length < 1){
+				this.$Message.info(this.msg.unselectInfo);
+			}else{			
 				var resourceStr = this.selectArr.join(',');	
-				this.changePage(1);	
-				this.deleteResource(resourceStr);				
+				this.deleteClass(resourceStr);
 			}
 		},		
 		pushAll(){			

@@ -38,7 +38,7 @@ export default {
     },
     created(){
         this.filterId=this.$router.history.current.query.id;
-        console.log(this.$router.history.current.query.id)
+        // console.log(this.$router.history.current.query.id)
     }
 }
 </script>

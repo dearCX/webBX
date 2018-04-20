@@ -29,6 +29,18 @@ const colorList = [
   '#3bc385',
   '#808080',
 ];
+const bgColorList = [
+  '#00a7e9',
+  '#5984e5',
+  '#34ac75',
+  '#d7ac00',
+  '#984fdd',
+  '#ff8383',
+  '#3f9d26',
+  '#ffa751',
+  '#ee8600',
+  '#808080'
+];
 function setFileType(fileType,size){
     let imgUrl=''
     switch(fileType){
@@ -85,14 +97,49 @@ const colorListLength =10;
 function getRandColor () {
   var tem = Math.round(Math.random() * colorListLength)
   return colorList[tem]
-}            		
+}
+function getRandbgColor () {
+  var tem = Math.round(Math.random() * colorListLength)
+  return bgColorList[tem]
+}  
+function formatSize(limit){  
+            var size = "";  
+            if( limit < 0.1 * 1024 ){ //如果小于0.1KB转化成B  
+                size = limit.toFixed(2) + "B";    
+            }else if(limit < 0.1 * 1024 * 1024 ){//如果小于0.1MB转化成KB  
+                size = (limit / 1024).toFixed(2) + "KB";              
+            }else if(limit < 0.1 * 1024 * 1024 * 1024){ //如果小于0.1GB转化成MB  
+                size = (limit / (1024 * 1024)).toFixed(2) + "MB";  
+            }else{ //其他转化成GB  
+                size = (limit / (1024 * 1024 * 1024)).toFixed(2) + "GB";  
+            }  
+            
+            var sizestr = size + "";   
+            var len = sizestr.indexOf("\.");  
+            var dec = sizestr.substr(len + 1, 2);  
+            if(dec == "00"){//当小数点后为00时 去掉小数部分  
+                return sizestr.substring(0,len) + sizestr.substr(len + 3,2);  
+            }  
+            return sizestr;  
+        } 
+function formatTime(input) {
+      var d = new Date(input);
+      var year = d.getFullYear();
+      var month = d.getMonth() + 1;
+      var day = d.getDate();
+      return  year+ '-' + month + '-' + day;
+    }      		
 export default
 {
   per2gradeList,
   subjectList,
   colorList,
+  bgColorList,
   colorListLength,
   getRandColor,
+  getRandbgColor,
+  formatSize,
+  formatTime,
   setFileType
 }
 </script>
