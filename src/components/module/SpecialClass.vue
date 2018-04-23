@@ -16,7 +16,9 @@
                     <span>学段</span>
                 </p>
                 <ul>
-                    <li v-for="item of periodList" @click="changePeriod(item)" :class="{active:item.id==selPeriod}">{{item.name}}</li>
+                    <li v-for="item of periodList" 
+                    @click="changePeriod(item)" 
+                    :class="{active:item.id==selPeriod}" v-if="item.id>0">{{item.name}}</li>
                 </ul>
             </div>
             <div v-if="selType ==1">
@@ -25,7 +27,20 @@
                     <span>年级</span>
                 </p>
                 <ul>
-                    <li v-for="item of gradeList" @click="changeGrade(item)" :class="{active:item.id==selGrade}">{{item.name}}</li>
+                    <li v-for="item of gradeList" 
+                    @click="changeGrade(item)" 
+                    :class="{active:item.id==selGrade}" v-if="item.id>3">{{item.name}}</li>
+                </ul>
+            </div>
+            <div v-if="selType ==1">
+                <p>
+                    <Icon type="ios-list-outline"></Icon>
+                    <span>学科</span>
+                </p>
+                <ul>
+                    <li v-for="item of subjectList" 
+                    @click="changeSubject(item)" 
+                    :class="{active:item.id==selSubject}">{{item.name}}</li>
                 </ul>
             </div>
             <div v-if="selType ==2">
@@ -34,16 +49,20 @@
                     <span>专题</span>
                 </p>
                 <ul>
-                    <li v-for="item of specialList" @click="changeSpecial(item)" :class="{active:item.id==selSpecial}">{{item.name}}</li>
+                    <li v-for="item of specialList" 
+                    @click="changeSpecial(item)" 
+                    :class="{active:item.columnId==selSpecial}">{{item.columnName}}</li>
                 </ul>
             </div>
-            <div>
+            <div v-if="selType ==2">
                 <p>
                     <Icon type="ios-list-outline"></Icon>
                     <span>学科</span>
                 </p>
                 <ul>
-                    <li v-for="item of subjectList" @click="changeSubject(item)" :class="{active:item.id==selSubject}">{{item.name}}</li>
+                    <li v-for="item of themeList" 
+                    @click="changeTheme(item)" 
+                    :class="{active:item.themeId==selTheme}">{{item.themeName}}</li>
                 </ul>
             </div>
             
@@ -52,8 +71,10 @@
      
             <div id="content-box">
                 <ul class="filters" v-if="selType ==1">
-                    <li v-for="item of titleList" :class="{active:item.id==localList}" @click="changelist(item)">
-                        <span></span>{{item.name}}
+                    <li v-for="item of titleList" 
+                    :class="{active:item.topicId==selTopic}" 
+                    @click="changelist(item)" :title="item.topicName">
+                        <span></span>{{item.topicName}}
                     </li>                                      
                 </ul>
                 <div class="contents" :class="{contentsAll:selType ==2}">
@@ -63,21 +84,21 @@
                     <ul class="right-list">            
                         <li v-for="item of resourceList">
                         <div class="file-img">
-                            <img src="/static/imgs/resource/fileXls.png" alt="文档图片">
+                            <img src="/static/imgs/resource/fileVideo.png" alt="文档图片">
                         </div>
                         <div class="file-content">
-                            <h5>{{item.title}}</h5>
+                            <h5>{{item.knowledgePoint}} </h5>
                             <p>
-                            <span>大小：{{item.size}}</span>
-                            <span>浏览：{{item.view}}</span>
-                            <span>下载：{{item.downLoad}}次</span>
-                            <span>收藏：{{item.collect}}</span>
+                            <span>{{item.periodName}}</span>
+                            <span>{{item.gradeName}}</span>
+                            <span>{{item.subjectName}}</span>
+                            <span>专辑名称：{{item.topic}}</span>
                             </p>
-                            <p>贡献者：{{item.creator}}</p>
-                            <p>贡献时间：{{item.date}}</p>
+                            <!-- <p>讲师：{{item.lecturer}}</p> -->
                         </div>
                         <div class="file-star">
-                            <Rate v-model="star"></Rate>
+                            <!-- <span>特色微课</span> -->
+                            <!-- <Rate v-model="star"></Rate> -->
                         </div>
                         </li>                
                     </ul>
@@ -89,18 +110,12 @@
        
 </template>
 <script>
+import global_ from '@/components/Global'; 
 export default {
   name:'SpecialClass',
   data(){
       return{
-            typeList:[
-                {id:1,name:'不限'},
-                {id:2,name:'课件'},
-                {id:3,name:'试卷'},
-                {id:4,name:'学案'},
-                {id:5,name:'教案'},
-            ],
-            type:1,
+            token:this.$storage.getStorage('token'),
             star:5,
             totalCount:10,
             allType:[
@@ -108,73 +123,178 @@ export default {
                 {id:2,name:'专题微课'}
             ],
             selType:1,
-            periodList:[
-                {id:1,name:'高中'},
-                {id:2,name:'初中'},
-                {id:3,name:'小学'},
-            ],
-            selPeriod:1,
-            gradeList:[
-                {id:0,name:'全部'},
-                {id:1,name:'三年级'},
-                {id:2,name:'四年级'},
-                {id:3,name:'五年级'},
-            ],
-            selGrade:0,
-            subjectList:[   
-                {id:0,name:'全部'},             
-                {id:1,name:'语文'},
-                {id:2,name:'数学'},
-                {id:3,name:'英语'},
-                {id:4,name:'物理'},
-                {id:5,name:'化学'},
-                {id:6,name:'生物'},
-                {id:7,name:'地理'},
-                {id:8,name:'历史'},
-                {id:9,name:'政治'}
-            ],
-            selSubject:0,
-            specialList:[                
-                {id:1,name:'奥数'},
-                {id:2,name:'小升初'},
-                {id:3,name:'中考'}
-            ],
+            periodList:global_.per2gradeList,
+            selPeriod:2,
+            gradeList:global_.per2gradeList[1].gradeList,
+            selGrade:7,
+            subjectList:global_.subjectList,
+            selSubject:1,
+            specialList:[],
             selSpecial:1,
-            titleList:[
-                {id:1,name:'整式的加减'},             
-                {id:2,name:'一元一次方程'},
-                {id:3,name:'几何图形解析'},
-                {id:4,name:'专题名称'},
-            ],
-            localList:1,
-            resourceList:[
-                {title:'高考快速提分秘籍',size:'7M',view:2400,downLoad:360,collect:20,creator:'张先生',date:'2018-3-26'},
-                {title:'高考快速提分秘籍',size:'7M',view:2400,downLoad:360,collect:20,creator:'张先生',date:'2018-3-26'},
-                {title:'高考快速提分秘籍',size:'7M',view:2400,downLoad:360,collect:20,creator:'张先生',date:'2018-3-26'},
-                {title:'高考快速提分秘籍',size:'7M',view:2400,downLoad:360,collect:20,creator:'张先生',date:'2018-3-26'},
-                {title:'高考快速提分秘籍',size:'7M',view:2400,downLoad:360,collect:20,creator:'张先生',date:'2018-3-26'}
-            ]
+            themeList:[],
+            selTheme:1,
+            titleList:[],
+            selTopic:119,
+            resourceList:[]
       }
   },
   methods:{
     changeType(item){
       this.selType=item.id; 
+      if(this.selType==2){
+        this.getColumnList(0)
+        this.getThemeList(0,0,1)
+        this.getResourceList(0,0,2,this.selTheme);
+      }
     },
     changePeriod(item){
-      this.selPeriod=item.id; 
+      this.selPeriod=item.id;
+      if(item.id==3){
+        this.selGrade=item.gradeList[3].id;
+      }else{
+        this.selGrade=item.gradeList[0].id;
+      }
+      this.gradeList=item.gradeList;
+      this.getSubjectList(this.selGrade);
+      this.getTitleList(this.selPeriod,this.selGrade,1);
+      this.getResourceList(this.selPeriod,this.selGrade,1);
     },
     changeGrade(item){
-      this.selGrade=item.id; 
+      this.selGrade=item.id;
+      this.getSubjectList(this.selGrade);
+      this.getTitleList(this.selPeriod,this.selGrade,1);
+      this.getResourceList(this.selPeriod,this.selGrade,1); 
     },
     changeSubject(item){
       this.selSubject=item.id; 
+      this.getTitleList(this.selPeriod,this.selGrade,this.selSubject); 
+      this.getResourceList(this.selPeriod,this.selGrade,this.selSubject); 
     },
     changeSpecial(item){
-      this.selSpecial=item.id; 
+      this.selSpecial=item.columnId;
+      this.getThemeList(0,0,this.selSpecial) 
+    },
+    changeTheme(item){
+      this.selTheme=item.themeId; 
+      this.getResourceList(0,0,item.subjectId,this.selTheme);
     },
     changelist(item){
-      this.localList=item.id; 
-    }
+      this.selTopic=item.topicId; 
+      this.getResourceList(this.selPeriod,this.selGrade,this.selSubject,0,this.selTopic);
+    },
+    getColumnList(gId){
+    this.$http.post('/web/microcourse/listColumn.do',this.$qs.stringify({
+        token:this.token,
+        gradeId:gId
+      }))
+     .then((res)=>{
+        if(res.data.status==0){
+          if(res.data.data instanceof Array && res.data.data.length>0){
+              this.specialList=res.data.data;
+            }else{
+              this.specialList = [];
+            }
+        }else{
+          this.$Message.info(res.data.message);
+        }
+      })
+      .catch((err)=>{
+        alert(err);
+      })
+    },
+    getThemeList(pId,gId,cId){
+    this.$http.post('/web/microcourse/listTheme.do',this.$qs.stringify({
+        token:this.token,
+        periodId:pId,
+        gradeId:gId,
+        cloumnId:cId
+      }))
+     .then((res)=>{
+        if(res.data.status==0){
+          if(res.data.data instanceof Array && res.data.data.length>0){
+              this.themeList=res.data.data;
+              this.selTheme=res.data.data[0].themeId;
+              this.selSubject=res.data.data[0].subjectId;
+              this.getResourceList(0,0,this.selSubject,this.selTheme);
+            }else{
+              this.themeList = [];
+            }
+        }else{
+          this.$Message.info(res.data.message);
+        }
+      })
+      .catch((err)=>{
+        alert(err);
+      })
+    },
+    getSubjectList(gId){
+    this.$http.post('/web/microcourse/listSubjcectByGradeId.do',this.$qs.stringify({
+        gradeId:gId
+      }))
+     .then((res)=>{
+        if(res.data.status==0){
+          this.subjectList=res.data.data;
+        }else{
+          this.$Message.info(res.data.message);
+        }
+      })
+      .catch((err)=>{
+        alert(err);
+      })
+    },
+    getTitleList(pId,gId,sId){
+    this.$http.post('/web/microcourse/getTopicList.do',this.$qs.stringify({
+        token:this.token,
+        periodId:pId,
+        gradeId:gId,
+        subjectId:sId
+      }))
+     .then((res)=>{
+        if(res.data.status==0){
+            if(res.data.data instanceof Array && res.data.data.length>0){
+              this.titleList=res.data.data;
+              this.selTopic=res.data.data[0].topicId;
+            }else{
+              this.titleList = [];
+            }
+        }else{
+          this.$Message.info(res.data.message);
+        }
+      })
+      .catch((err)=>{
+        alert(err);
+      })
+    }, 
+    getResourceList(pId,gId,sId,themId,topicId,pIdx){
+    this.$http.post('/web/microcourse/listResource.do',this.$qs.stringify({
+        token:this.token,
+        periodId:pId||'',
+        gradeId:gId||"",
+        subjectId:sId||"",
+        themeId:themId||0,
+        topicId:topicId||0,
+        pageIndex:pIdx||1,
+        pageSize:10
+      }))
+     .then((res)=>{
+        if(res.data.status==0){
+            if(res.data.data.list instanceof Array && res.data.data.list.length>0){
+              this.resourceList=res.data.data.list;
+            }else{
+              this.resourceList = [];
+            }
+        }else{
+          this.$Message.info(res.data.message);
+        }
+      })
+      .catch((err)=>{
+        alert(err);
+      })
+    }, 
+  },
+  created(){
+    this.getTitleList(this.selPeriod,this.selGrade,this.selSubject);
+    this.getResourceList(this.selPeriod,this.selGrade,this.selSubject,0,this.selTopic);
   }
 }
 </script>
@@ -200,6 +320,7 @@ export default {
     #filter-list>div ul{
         float: left;
         margin-left: 60px;
+        max-width: 1040px;
     }
     #filter-list>div ul li{
         float: left;
@@ -232,11 +353,15 @@ export default {
      border-right:1px solid #eee;
    }
    .filters li{
+     max-width: 215px;
      height: 60px;
      line-height: 60px;
      border-bottom: 1px solid #f3f3f3;
      font-size: 16px;
      padding-left: 20px;
+     overflow: hidden;
+     text-overflow:ellipsis;
+     white-space: nowrap;
    }   
    .filters li.active{
      height: 60px;
@@ -250,7 +375,7 @@ export default {
      position: absolute;
      left: 0;
      top: 15px;
-     border-left: 3px solid #1caaf1;
+     /*border-left: 3px solid #1caaf1;*/
      height: 30px;
    }
    .contents{
@@ -309,7 +434,7 @@ export default {
      color: #999;
    }
    .file-content p{
-     margin: 5px 0;
+     margin-top: 55px;
    }
    .file-content p span{
      margin-right: 20px;
@@ -324,6 +449,13 @@ export default {
    }
    .file-star{
         text-align: right;
+    }
+    .file-star span{
+        font-size: 14px;
+        color:#1caaf1;
+        border: 1px solid #1caaf1;
+        font-weight: 400;
+        padding: 3px;
     }
 </style>
 

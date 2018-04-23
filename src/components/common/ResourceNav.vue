@@ -20,7 +20,7 @@ export default {
                     {text:'区域资源',path:'/FilterResource/AreaResource?id=AreaResource',id:'AreaResource'},   
                     {text:'校本资源',path:'/FilterResource/SchoolResource?id=SchoolResource',id:'SchoolResource'},   
                     {text:'特色微课',path:'/FilterResource/SpecialClass?id=SpecialClass',id:'SpecialClass'},   
-                    {text:'优客专区',path:'/FilterResource/HightQualityClass?id=HightQualityClass',id:'HightQualityClass'}
+                    {text:'优课专区',path:'/FilterResource/HightQualityClass?id=HightQualityClass',id:'HightQualityClass'}
                 ],
                 filterId:'AreaResource',
                 search:''

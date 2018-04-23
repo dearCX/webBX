@@ -100,11 +100,37 @@ export default new Router({
         }
       ]
     },
-    
     {
       path: '/Login',
       name: 'Login',      
       component: resolve => require(['../components/page/Login.vue'], resolve)      
+    },
+    {
+      path:'/Register',
+      component: resolve => require(['../components/page/Register.vue'], resolve),
+      children:[
+          {
+            path: '/',          
+            component: resolve => require(['../components/module/TeacherRegisterOne.vue'], resolve)
+          },
+          {
+            path: 'TeacherRegisterTwo',          
+            component: resolve => require(['../components/module/TeacherRegisterTwo.vue'], resolve)
+          },
+          {
+            path: 'StudentRegisterOne',          
+            component: resolve => require(['../components/module/StudentRegisterOne.vue'], resolve)
+          },
+          {
+            path: 'StudentRegisterTwo',          
+            component: resolve => require(['../components/module/StudentRegisterTwo.vue'], resolve)
+          }
+      ]
+    },
+    {      
+      path:'/ForgetPassword',
+      name:'ForgetPassword',
+      component: resolve => require(['../components/page/ForgetPassword.vue'], resolve)
     },
     {
       path: '/MySpace',   

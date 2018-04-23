@@ -112,7 +112,11 @@ import ClassList from '@/components/common/ClassList';
             gradeId:gId
           }))
          .then((res)=>{
-            this.subjectList=res.data.data;
+            if(res.data.status==0){
+              this.subjectList=res.data.data;
+            }else{
+              this.$Message.info(res.data.message);
+            }
           })
           .catch((err)=>{
             alert(err);
@@ -129,7 +133,11 @@ import ClassList from '@/components/common/ClassList';
           }))
           .then((res)=>{
             // console.log(res.data.data.list); 
-            this.ClassList=res.data.data.list;
+            if(res.data.status==0){
+              this.ClassList=res.data.data.list;
+            }else{
+              this.$Message.info(res.data.message);
+            }
           })
           .catch((err)=>{
             alert(err);

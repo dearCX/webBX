@@ -130,9 +130,13 @@ export default {
           token:this.$storage.getStorage("token"),
           filter:{
             periodId:2,
+            periodName:"初中",
             subjectId:2,
+            subjectName:"数学",
             versionId:293,
+            versionName:"人教版",
             textbookId:1343,
+            textbookName:"七年级上册",
             withDisabledNode:1
           },
           nodeTree:[],
@@ -179,6 +183,21 @@ export default {
         deep:true
     },
     methods:{
+        changeTitle(item){
+          this.selTitle=item.id;      
+          this.resourceKindId=item.id;  
+          this.getResourceLocalTypeList()
+          if(item.id==1){
+            this.getNodeTree(this.baseData)
+          }else{
+            this.getKnowTree(this.baseData)
+          }     
+        },
+        changeType(item){
+          this.type=item.id; 
+          this.filter.resourceTypeId=this.type;
+          this.getResourceList(this.filter)
+        },
         filterPer:function () {
             this.filter.subjectId=0;
             this.filter.versionId=0;
@@ -211,21 +230,6 @@ export default {
             }else{
                 this.getTextBookList(this.filter.periodId,this.filter.subjectId,this.filter.versionId);
             }
-        },
-        changeTitle(item){
-          this.selTitle=item.id;      
-		  this.resourceKindId=item.id; 	
-          this.getResourceLocalTypeList()
-          if(item.id==1){
-            this.getNodeTree(this.baseData)
-          }else{
-            this.getKnowTree(this.baseData)
-          }		
-        },
-        changeType(item){
-          this.type=item.id; 
-          this.filter.resourceTypeId=this.type;
-          this.getResourceList(this.filter)
         },
         getResourceList(data){
             this.$http.post('/web/coursebook/listResourceLocal.do',this.$qs.stringify(data))
@@ -385,7 +389,11 @@ export default {
                             this.subList = result.data.list;
                             if(sId){
                                 this.filter.subjectId=sId;
-                                this.getVersionList(this.baseData.periodId,this.baseData.subjectId,this.baseData.id);
+                                if(this.baseData.id){
+                                  this.getVersionList(this.baseData.periodId,this.baseData.subjectId,this.baseData.id);  
+                                }else{
+                                    this.getVersionList(2,2,293);
+                                }
                             }
                         }else{
                             this.subList = [];
@@ -420,7 +428,12 @@ export default {
                         this.verList = result.data.list; 
                         if(vId){
                             this.filter.versionId=vId;
-                            this.getTextBookList(this.baseData.periodId,this.baseData.subjectId,this.baseData.id,true);
+                            if(this.baseData.id){
+                                  this.getTextBookList(this.baseData.periodId,this.baseData.subjectId,this.baseData.id,true); 
+                                }else{
+                                    this.getTextBookList(2,2,293,true);
+                                }
+                            
                         }             
                     }else{
                         this.verList = [];
@@ -458,8 +471,11 @@ export default {
                             
                             if(tId){
                                 this.filter.textbookId=this.baseData.textbookId;
-                                this.ver2text=this.baseData.name+this.baseData.textbookName;
-                                this.getNodeTree(this.baseData); 
+                                if(result.data.list[0].textbookId!=1343){
+                                  this.ver2text=this.baseData.name+this.baseData.textbookName;
+                                }
+                                this.getNodeTree(this.baseData);
+                                this.getResourceList(this.filter) 
                             }        
                         }else{
                             this.textList = [{textbookId:0,textbookName:'无'}];
@@ -488,7 +504,8 @@ export default {
                         this.$Message.error('请求资源失败，请重试');
                     }else{              
                         if(result.data.list instanceof Array && result.data.list.length>0){
-                            this.typeList = result.data.list; 
+                            this.typeList = result.data.list;
+                            this.typeList.unshift({id: 0, name: "不限", type: 1}); 
                             this.type=result.data.list[0].id;         
                         }else{
                             this.typeList = [];
@@ -508,16 +525,20 @@ export default {
         } 
     },
     created() {
-        this.filter.periodId=this.baseData.periodId;
-        this.filter.token=this.token;
-        this.baseData.token=this.token;
-        this.baseData.withDisabledNode=1;
-        this.baseData.versionId=this.baseData.id;
-        this.per2sub=this.baseData.periodName+this.baseData.subjectName;
-        console.log(this.baseData)
-        this.getSubjectList(this.baseData.periodId,this.baseData.subjectId);
+        console.log(this.baseData.id)
+        if(this.baseData.id){
+            this.filter.periodId=this.baseData.periodId;
+            this.filter.token=this.token;
+            this.baseData.token=this.token;
+            this.baseData.withDisabledNode=1;
+            this.baseData.versionId=this.baseData.id;
+            this.per2sub=this.baseData.periodName+this.baseData.subjectName;
+            this.getSubjectList(this.baseData.periodId,this.baseData.subjectId);
+        }else{
+            this.per2sub=this.filter.periodName+this.filter.subjectName;
+            this.getSubjectList(2,2);
+        }
         this.getResourceLocalTypeList() 
-        this.getResourceList()
     }
 }
 </script>
@@ -674,7 +695,7 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
 }
-
+/*筛选end*/
    #filter-content{
       background-color: #fff;      
       margin-top: 40px;
@@ -797,8 +818,8 @@ export default {
      font-size: 14px;
      max-width: 375px;
      overflow: hidden;
-    text-overflow:ellipsis;
-    white-space: nowrap;
+     text-overflow:ellipsis;
+     white-space: nowrap;
    }
    .ivu-page{
      text-align: center;

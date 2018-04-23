@@ -246,14 +246,14 @@ export default {
 	}
 	#resource{
 		width: 300px;
-		height: 100px;/**/
+		height: 100px;
 		background: rgb(255, 255, 255);
 		margin-top: 10px;
 		border: 1px solid rgb(223, 228, 232);
 	}
 	#resource #side{
 		width: 50%;
-		height: 60px;/**/
+		height: 60px;
 		border-right: 1px solid #ccc; 
 		margin-top: 20px;
 		float: left;

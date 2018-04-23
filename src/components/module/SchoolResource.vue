@@ -454,8 +454,11 @@ export default {
                             
                             if(tId){
                                 this.filter.textbookId=this.baseData.textbookId;
-                                this.ver2text=this.baseData.name+this.baseData.textbookName;
-                                this.getNodeTree(this.baseData); 
+                                if(result.data.list[0].textbookId!=1343){
+                                  this.ver2text=this.baseData.name+this.baseData.textbookName;
+                                }
+                                this.getNodeTree(this.baseData);
+                                this.getResourceList(this.filter) 
                             }        
                         }else{
                             this.textList = [{textbookId:0,textbookName:'无'}];
@@ -484,7 +487,8 @@ export default {
                         this.$Message.error('请求资源失败，请重试');
                     }else{              
                         if(result.data.list instanceof Array && result.data.list.length>0){
-                            this.typeList = result.data.list; 
+                            this.typeList = result.data.list;
+                            this.typeList.unshift({id: 0, name: "不限", type: 1});  
                             this.type=result.data.list[0].id;         
                         }else{
                             this.typeList = [];
@@ -497,23 +501,26 @@ export default {
             });
         },  
         pageChange(page){
-            // this.filter.pageIndex=page;
-            // this.getResourceList(this.filter)
-            let data={pageIndex:page}
-            this.getResourceList(data)
+            this.filter.pageIndex=page;
+            this.getResourceList(this.filter)
+            // let data={pageIndex:page}
+            // this.getResourceList(data)
         } 
     },
     created() {
-        this.filter.periodId=this.baseData.periodId;
-        this.filter.token=this.token;
-        this.baseData.token=this.token;
-        this.baseData.withDisabledNode=1;
-        this.baseData.versionId=this.baseData.id;
-        this.per2sub=this.baseData.periodName+this.baseData.subjectName;
-        console.log(this.baseData)
-        this.getSubjectList(this.baseData.periodId,this.baseData.subjectId);
+        if(this.baseData.id){
+            this.filter.periodId=this.baseData.periodId;
+            this.filter.token=this.token;
+            this.baseData.token=this.token;
+            this.baseData.withDisabledNode=1;
+            this.baseData.versionId=this.baseData.id;
+            this.per2sub=this.baseData.periodName+this.baseData.subjectName;
+            this.getSubjectList(this.baseData.periodId,this.baseData.subjectId);
+        }else{
+            this.per2sub=this.filter.periodName+this.filter.subjectName;
+            this.getSubjectList(2,2);
+        }
         this.getResourceLocalTypeList() 
-        this.getResourceList()
     }
 }
 </script>

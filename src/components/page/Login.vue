@@ -33,6 +33,10 @@
                   <Checkbox v-model="single">一周内自动登录</Checkbox>
               </div>
               <Button type="primary" long @click="login">登录</Button>
+              <div class="more-operate">
+                  <router-link class="left" to="/Register/StudentRegisterOne">免费注册</router-link>
+                  <router-link class="right" to="/ForgetPassword">忘记密码</router-link>
+              </div>
           </div>         
         </div>
       </section>
@@ -139,6 +143,15 @@ export default {
 }
 .ivu-input{
   border:none;
+}
+.more-operate{
+  margin-top: 20px;
+  overflow: hidden;
+}
+.more-operate a{
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
 }
 #footer{
   position: fixed;
